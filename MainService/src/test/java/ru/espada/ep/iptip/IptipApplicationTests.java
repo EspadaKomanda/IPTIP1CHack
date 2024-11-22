@@ -66,7 +66,6 @@ class IptipApplicationTests {
         docker_run.waitFor();
         StringBuilder sb = new StringBuilder();
 
-        // Чтение стандартного вывода
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(docker_run.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
