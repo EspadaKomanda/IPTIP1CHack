@@ -1,0 +1,4 @@
+{
+  "lang": "java",
+  "payload": "public class Main {\n\n    public static void main(String[] args) {\n        try {\n            Thread.sleep(5000);\n        } catch (InterruptedException e) {\n            throw new RuntimeException(e);\n        }\n        System.out.println(\"Hello World!\");\n    }\n\n}"
+}
