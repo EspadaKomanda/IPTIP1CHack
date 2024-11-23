@@ -52,4 +52,9 @@ public class UserController {
     public ResponseEntity<?> getAvatarUrl(Principal principal) {
         return ResponseEntity.ok(userService.getAvatarUrl(principal.getName()));
     }
+
+    @GetMapping("/instituteInfo/username/{username}")
+    public ResponseEntity<?> getInstituteInfo(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getInstituteInfo(username));
+    }
 }

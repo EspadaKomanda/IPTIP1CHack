@@ -16,6 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.espada.ep.iptip.s3.S3Service;
+import ru.espada.ep.iptip.university.UniversityEntity;
+import ru.espada.ep.iptip.university.institute.major.MajorEntity;
+import ru.espada.ep.iptip.university.institute.major.faculty.FacultyEntity;
+import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
 import ru.espada.ep.iptip.user.permission.UserPermissionEntity;
 import ru.espada.ep.iptip.user.profile.ProfileEntity;
 import ru.espada.ep.iptip.user.profile.ProfileRepository;
@@ -173,5 +177,21 @@ public class UserService implements UserDetailsService {
     @Autowired
     public void setUserPermissionService(UserPermissionService userPermissionService) {
         this.userPermissionService = userPermissionService;
+    }
+
+    public InstituteInfoResponse getInstituteInfo(String username) {
+
+        UserEntity user = getUser(username);
+        ProfileEntity profile = user.getProfile();
+        //GroupEntity group = profile.getGroup();
+        int semester = profile.getSemester();
+        int course = semester / 2;
+
+        // TODO: make the rest of the attributes: major, major_code, faculty, institute, group, university
+        InstituteInfoResponse response = new InstituteInfoResponse();
+        response.Course = course;
+        response.Semester = semester;
+
+        return response;
     }
 }

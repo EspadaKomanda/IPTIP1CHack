@@ -11,16 +11,7 @@ import ru.espada.ep.iptip.course.CourseEntity;
 @NoArgsConstructor
 @Builder
 public class CustomerCourseResponse {
-
     private Long id;
     private String name;
     private String description;
-
-    public static CustomerCourseResponse fromCourse(CourseEntity courseEntity) {
-        return CustomerCourseResponse.builder()
-                .id(courseEntity.getId())
-                .name(courseEntity.getName())
-                .description(courseEntity.getDescription())
-                .build();
-    }
 }
