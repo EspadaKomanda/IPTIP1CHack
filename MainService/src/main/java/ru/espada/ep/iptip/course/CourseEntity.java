@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.espada.ep.iptip.course.test.TestEntity;
+import ru.espada.ep.iptip.course.test.course_test.CourseTestEntity;
 import ru.espada.ep.iptip.user.UserEntity;
 import ru.espada.ep.iptip.user.permission.annotation.FieldPermission;
 import ru.espada.ep.iptip.user.permission.annotation.Permission;
@@ -46,7 +47,7 @@ public class CourseEntity {
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @FieldPermission
-    private Set<TestEntity> tests;
+    private Set<CourseTestEntity> tests;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

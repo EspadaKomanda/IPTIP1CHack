@@ -16,12 +16,6 @@ public class TestController {
 
     private TestService testService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createTest(@Valid @RequestBody CreateTestModel createTestModel) {
-        testService.createTest(createTestModel);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
     @PostMapping("/create/{testId}/question")
     public ResponseEntity<?> createQuestion(@PathVariable Long testId, @Valid @RequestBody CreateQuestionModel createQuestionModel) {
         testService.createQuestion(createQuestionModel);

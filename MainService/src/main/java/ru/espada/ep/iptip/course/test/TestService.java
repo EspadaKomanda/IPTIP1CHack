@@ -23,16 +23,6 @@ public class TestService {
         this.testRepository = testRepository;
     }
 
-    public void createTest(CreateTestModel createTestModel) {
-        TestEntity testEntity = TestEntity.builder()
-                .name(createTestModel.getName())
-                .description(createTestModel.getDescription())
-                .position(createTestModel.getPosition())
-                .course(CourseEntity.builder().id(createTestModel.getCourseId()).build())
-                .build();
-        testRepository.save(testEntity);
-    }
-
     public void createQuestion(CreateQuestionModel createQuestionModel) {
         QuestionEntity questionEntity = QuestionEntity.builder()
                 .title(createQuestionModel.getTitle())

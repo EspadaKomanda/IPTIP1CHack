@@ -19,7 +19,7 @@ public class UserPermissionService {
     @Getter
     @Setter
     private Map<String, Object> permissions;
-    @Value("${user.permissions.special}")
+    @Value("${user.permissions.special:null}")
     @Getter
     private String[] specialPermissions;
 

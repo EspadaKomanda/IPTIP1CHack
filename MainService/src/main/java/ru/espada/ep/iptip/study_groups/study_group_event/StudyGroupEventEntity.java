@@ -18,7 +18,9 @@ public class StudyGroupEventEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "study_group_id")
     private Long studyGroupId;
+    @Column(name = "event_id")
     private Long eventId;
     private boolean isMandatory;
 

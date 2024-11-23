@@ -38,17 +38,6 @@ public class CourseService {
         return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
     }
 
-    public CourseResponseModel getUserCourseInfo(Long id) {
-        CourseEntity courseEntity = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
-        List<TestEntity> tests = courseEntity.getTests().stream().sorted(Comparator.comparingInt(TestEntity::getPosition)).toList();
-        return CourseResponseModel.builder()
-                .id(id)
-                .name(courseEntity.getName())
-                .duration(courseEntity.getDuration())
-                .tests(tests)
-                .build();
-    }
-
     @Autowired
     public void setCourseRepository(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;

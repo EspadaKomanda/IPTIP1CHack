@@ -35,11 +35,6 @@ public class CourseController {
         return ResponseEntity.ok(courseService.getCourse(id));
     }
 
-    @GetMapping("/get-user-course-info/{id}")
-    public ResponseEntity<?> getUserCourseInfo(@PathVariable Long id) {
-        return ResponseEntity.ok(courseService.getUserCourseInfo(id));
-    }
-
     @Autowired
     public void setCourseService(CourseService courseService) {
         this.courseService = courseService;

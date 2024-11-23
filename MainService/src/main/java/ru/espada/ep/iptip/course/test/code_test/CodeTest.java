@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 import ru.espada.ep.iptip.code_starter.impl.JavaCodeStarter;
 import ru.espada.ep.iptip.course.test.question.QuestionType;
-import ru.espada.ep.iptip.course.test.answer.AnswerEntity;
+import ru.espada.ep.iptip.course.test.user_test_attempt.UserTestAttemptEntity;
+import ru.espada.ep.iptip.course.test.user_test_attempt.user_test_attempt_answer.UserTestAttemptAnswerEntity;
 import ru.espada.ep.iptip.user.UserEntity;
 
 import java.io.File;
@@ -21,13 +22,13 @@ import java.io.IOException;
 public class CodeTest {
 
     private UserEntity user;
-    private AnswerEntity answer;
+    private UserTestAttemptAnswerEntity answer;
     private File user_dir;
     @Autowired
     private ObjectMapper objectMapper;
     private String operationUUID;
 
-    public void test(UserEntity user, AnswerEntity answer, String operationUUID) {
+    public void test(UserEntity user, UserTestAttemptAnswerEntity answer, String operationUUID) {
         this.user = user;
         this.answer = answer;
         this.operationUUID = operationUUID;
@@ -46,7 +47,7 @@ public class CodeTest {
 
     private void startTesting() {
         try {
-            JsonNode jsonNode = objectMapper.readTree(answer.getQuestion().getContent());
+            JsonNode jsonNode = objectMapper.readTree(answer.getContent());
             for (int i = 0; i < jsonNode.size() / 2; i++) {
                 String input = jsonNode.get("test_" + i).asText();
                 String answer = jsonNode.get("answer_" + i).asText();
@@ -91,7 +92,7 @@ public class CodeTest {
         String result = "error";
 
         try {
-            JsonNode jsonNode = objectMapper.readTree(answer.getAnswer());
+            JsonNode jsonNode = objectMapper.readTree(answer.getQuestion().getContent());
             String lang = jsonNode.get("lang").asText();
             switch (answer.getQuestion().getQuestionType()) {
                 case QuestionType.CODE:

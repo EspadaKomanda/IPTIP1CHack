@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.espada.ep.iptip.event.EventEntity;
+import ru.espada.ep.iptip.study_groups.study_group_event.StudyGroupEventEntity;
 import ru.espada.ep.iptip.user.UserEntity;
 import ru.espada.ep.iptip.user.permission.annotation.FieldPermission;
 import ru.espada.ep.iptip.user.permission.annotation.Permission;
@@ -42,5 +43,12 @@ public class StudyGroupEntity {
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     @FieldPermission
     private Set<EventEntity> events;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "study_group_event",
+            joinColumns = @JoinColumn(name = "study_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id"))
+    @FieldPermission
+    private Set<StudyGroupEventEntity> studyGroupEvents;
 
 }

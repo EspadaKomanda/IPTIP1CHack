@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "test", schema = "tests")
+@Table(name = "test")
 @Permission(children = {QuestionEntity.class}, value = "test")
 public class TestEntity {
 

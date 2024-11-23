@@ -35,29 +35,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/get-customer-courses")
-    public ResponseEntity<?> getCustomerCourses(Principal principal) {
-        return ResponseEntity.ok(userService.getCustomerCourses(principal.getName()));
-    }
-
     @GetMapping("/get-responsible-courses")
     public ResponseEntity<?> getResponsibleCourses(Principal principal) {
         return ResponseEntity.ok(userService.getResponsibleCourses(principal));
-    }
-
-    @GetMapping("/get-customer")
-    public ResponseEntity<?> getCustomer(Principal principal) {
-        return ResponseEntity.ok(userService.getCustomer(principal.getName()));
-    }
-
-    @GetMapping("/get-customer/{id}")
-    public ResponseEntity<?> getCustomer(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getCustomer(id));
-    }
-
-    @GetMapping("/get-customer/{username}")
-    public ResponseEntity<?> getCustomer(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getCustomer(username));
     }
 
     @GetMapping("/get-user")
@@ -91,11 +71,5 @@ public class UserController {
         return ResponseEntity.ok(userService.getAvatarUrl(principal.getName()));
     }
 
-    @PutMapping("/attach-customer-to-course")
-    @PreAuthorize("hasPermission(#attachUserToCourseRequest, 'course.{courseId}')")
-    public ResponseEntity<?> attachUserToCourse(@Valid @RequestBody AttachUserToCourseRequest attachUserToCourseRequest) {
-        userService.attachCourseToCustomer(attachUserToCourseRequest.getUsername(), attachUserToCourseRequest.getCourseId(), attachUserToCourseRequest.getStartTime(), attachUserToCourseRequest.getEndTime());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
+    //@PreAuthorize("hasPermission(#attachUserToCourseRequest, 'course.{courseId}')")
 }
