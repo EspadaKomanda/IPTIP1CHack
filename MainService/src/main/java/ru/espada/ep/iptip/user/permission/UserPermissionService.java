@@ -21,7 +21,7 @@ public class UserPermissionService {
     private Map<String, Object> permissions;
     @Value("${user.permissions.special:null}")
     @Getter
-    private String[] specialPermissions;
+    private List<String> specialPermissions;
 
     public UserPermissionService(UserPermissionRepository userPermissionRepository, UserRepository userRepository) {
         this.userPermissionRepository = userPermissionRepository;
@@ -39,7 +39,7 @@ public class UserPermissionService {
                 addPermissionsRecursive(map, key, permissions);
             }
         }
-        if (specialPermissions != null) permissions.addAll(Arrays.asList(specialPermissions));
+        if (specialPermissions != null) permissions.addAll(specialPermissions);
         return permissions;
     }
 

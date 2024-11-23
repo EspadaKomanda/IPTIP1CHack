@@ -1,5 +1,6 @@
 package ru.espada.ep.iptip.user;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
 import java.security.Principal;
 
 @RestController
+@SecurityRequirement(name = "JWT")
 @RequestMapping("/admin/user")
 public class AdminUserController {
 
@@ -23,7 +25,6 @@ public class AdminUserController {
     }
 
     @GetMapping("/users/{page}")
-
     public ResponseEntity<?> getUsers(@PathVariable int page) {
         return ResponseEntity.ok(userService.allUsers(page));
     }

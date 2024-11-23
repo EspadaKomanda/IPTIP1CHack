@@ -48,9 +48,8 @@ public class UserController {
         return ResponseEntity.ok(url);
     }
 
-    // FIXME: I think a path parameter is supposed to be here...
     @GetMapping("/avatar")
-    public ResponseEntity<?> getAvatarUrl(Principal principal, @Valid @RequestBody AddRoleRequest addRoleRequest) {
+    public ResponseEntity<?> getAvatarUrl(Principal principal) {
         return ResponseEntity.ok(userService.getAvatarUrl(principal.getName()));
     }
 }
