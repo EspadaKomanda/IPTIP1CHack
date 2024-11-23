@@ -1,4 +1,4 @@
-package ru.espada.ep.iptip.s3;
+package ru.espada.ep.iptip.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

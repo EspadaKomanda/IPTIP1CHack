@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
-import ru.espada.ep.iptip.user.models.request.AttachUserToCourseRequest;
 import ru.espada.ep.iptip.user.models.request.CreateCustomerRequest;
 
 import java.security.Principal;
@@ -67,9 +66,10 @@ public class UserController {
     }
 
     @GetMapping("/get-avatar-url")
-    public ResponseEntity<?> getAvatarUrl(Principal principal) {
+    @PreAuthorize("hasPermission(#addRoleRequest, 'course.{id}')")
+    public ResponseEntity<?> getAvatarUrl(Principal principal, @Valid @RequestBody AddRoleRequest addRoleRequest) {
         return ResponseEntity.ok(userService.getAvatarUrl(principal.getName()));
     }
 
-    //@PreAuthorize("hasPermission(#attachUserToCourseRequest, 'course.{courseId}')")
+    //
 }

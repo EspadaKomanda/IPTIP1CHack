@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
 import ru.espada.ep.iptip.user.permission.annotation.FieldPermission;
+import ru.espada.ep.iptip.user.permission.annotation.Permission;
 
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "event")
+@Permission(value = "event", children = {})
 public class EventEntity {
 
     @Id
@@ -23,20 +25,26 @@ public class EventEntity {
     private Long id;
 
     @Column(nullable = false)
+    @FieldPermission
     private String name;
+    @FieldPermission
     private Long date;
+    @FieldPermission
     private int weekday;
+    @FieldPermission
     private boolean is_week_event;
+    @FieldPermission
     private Long begin_date;
+    @FieldPermission
     private Long end_date;
     @Column(nullable = false)
+    @FieldPermission
     private Long duration;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "study_group_event",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "study_group_id") )
-    @FieldPermission
     private Set<StudyGroupEntity> study_groups;
 
 }

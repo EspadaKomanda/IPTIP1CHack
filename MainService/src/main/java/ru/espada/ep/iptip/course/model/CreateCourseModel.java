@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class CreateCourseModel {
 
     private String name;
-    private Long duration;
+    private String description;
 
 }

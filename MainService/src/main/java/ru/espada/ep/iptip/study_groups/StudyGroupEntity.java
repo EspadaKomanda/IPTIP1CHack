@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.espada.ep.iptip.event.EventEntity;
 import ru.espada.ep.iptip.study_groups.study_group_event.StudyGroupEventEntity;
+import ru.espada.ep.iptip.university.institute.major.faculty.FacultyEntity;
 import ru.espada.ep.iptip.user.UserEntity;
 import ru.espada.ep.iptip.user.permission.annotation.FieldPermission;
 import ru.espada.ep.iptip.user.permission.annotation.Permission;
@@ -19,7 +20,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "study_group")
-@Permission(children = {UserEntity.class}, value = "study_group", isStart = true)
+@Permission(children = {UserEntity.class, EventEntity.class}, value = "study_group")
 public class StudyGroupEntity {
 
     @Id
@@ -48,7 +49,12 @@ public class StudyGroupEntity {
     @JoinTable(name = "study_group_event",
             joinColumns = @JoinColumn(name = "study_group_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
-    @FieldPermission
+    @FieldPermission(value = "study_group_event")
     private Set<StudyGroupEventEntity> studyGroupEvents;
+
+    @OneToOne
+    @JoinColumn(name = "faculty_id")
+    @FieldPermission
+    private FacultyEntity faculty;
 
 }
