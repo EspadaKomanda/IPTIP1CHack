@@ -48,7 +48,7 @@ public class AdminDataInitializer implements ApplicationListener<ApplicationRead
         // права
         UserPermissionEntity adminPermission = UserPermissionEntity.builder()
                 .userId(admin.getId())
-                .name("users.admin")
+                .name("admin")
                 .startTime(-1L)
                 .endTime(-1L)
                 .build();

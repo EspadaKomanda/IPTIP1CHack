@@ -58,7 +58,7 @@ public class UserEntity extends Auditable implements UserDetails, Serializable {
     )
     private Set<CourseEntity> responsibleCourses;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private List<UserPermissionEntity> permissions;

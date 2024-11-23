@@ -1,24 +1,31 @@
 package ru.espada.ep.iptip.user.permission.groups;
 
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.espada.ep.iptip.user.UserService;
 import ru.espada.ep.iptip.user.permission.UserPermissionService;
-import ru.espada.ep.iptip.user.permission.groups.models.AddPermissionRequest;
+import ru.espada.ep.iptip.user.permission.groups.models.AddPermissionsToGroup;
+import ru.espada.ep.iptip.user.permission.groups.models.UserPermissionForGroupReqest;
 import ru.espada.ep.iptip.user.permission.groups.models.CreateGroupModel;
 import ru.espada.ep.iptip.user.permission.groups.models.GroupToUserRequest;
 import ru.espada.ep.iptip.user.permission.groups.permission_group.PermissionGroupEntity;
+import ru.espada.ep.iptip.user.permission.groups.permission_group.PermissionGroupEntityRepository;
 
 import java.security.Principal;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService {
 
     private GroupRepository groupRepository;
     private UserService userService;
     private UserPermissionService userPermissionService;
+
+    private final PermissionGroupEntityRepository permissionGroupEntityRepository;
 
     @PostConstruct
     public void init() {
@@ -36,6 +43,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public void createGroup(Principal principal, CreateGroupModel createGroupModel) {
         for (String permission : createGroupModel.getPermissions()) {
             if (!userPermissionService.hasPermission(principal.getName(), permission)) {
@@ -46,9 +54,18 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity groupEntity = GroupEntity.builder()
                 .name(createGroupModel.getName())
                 .color(createGroupModel.getColor())
-                .permission_groups(createGroupModel.getPermissions().stream().map(permission -> new PermissionGroupEntity(permission)).toList())
                 .build();
         addGroup(groupEntity);
+
+        groupRepository.save(groupEntity);
+
+        for (String permission : createGroupModel.getPermissions()) {
+            PermissionGroupEntity permissionGroupEntity = PermissionGroupEntity.builder()
+                    .groupId(groupEntity.getId())
+                    .permission(permission)
+                    .build();
+            permissionGroupEntityRepository.save(permissionGroupEntity);
+        }
 
         for (String username : createGroupModel.getUsersCanManage()) {
             userPermissionService.addPermission(username, "group." + createGroupModel.getName(), -1L, -1L);
@@ -61,8 +78,26 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void addPermission(AddPermissionRequest addPermissionRequest) {
-        userPermissionService.addPermission(addPermissionRequest.getUsername(), "group." + addPermissionRequest.getGroup(), -1L, -1L);
+    public void addUserPermission(UserPermissionForGroupReqest userPermissionForGroupReqest) {
+        userPermissionService.addPermission(userPermissionForGroupReqest.getUsername(), "group." + userPermissionForGroupReqest.getGroup(), -1L, -1L);
+    }
+
+    @Override
+    public void addGroupPermission(Principal principal, AddPermissionsToGroup addPermissionsToGroup) {
+        for (String permission : addPermissionsToGroup.getPermissions()) {
+            if (!userPermissionService.hasPermission(principal.getName(), permission)) {
+                throw new RuntimeException("User " + principal.getName() + " doesn't have permission " + permission);
+            }
+        }
+
+        GroupEntity groupEntity = groupRepository.findGroupEntityByName(addPermissionsToGroup.getGroup()).orElseThrow();
+        for (String permission : addPermissionsToGroup.getPermissions()) {
+            PermissionGroupEntity permissionGroupEntity = PermissionGroupEntity.builder()
+                    .groupId(groupEntity.getId())
+                    .permission(permission)
+                    .build();
+            permissionGroupEntityRepository.save(permissionGroupEntity);
+        }
     }
 
     @Override
@@ -70,7 +105,7 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity groupEntity = groupRepository.findGroupEntityByName(groupToUserRequest.getGroup()).orElseThrow();
 
         for (String username : groupToUserRequest.getUsers()) {
-            userPermissionService.addPermissions(username, groupEntity.getPermission_groups().stream().map(PermissionGroupEntity::getPermission).toList());
+            userPermissionService.addPermissions(username, groupEntity.getPermission_groups().stream().map(PermissionGroupEntity::getPermission).toList(), -1L, -1L);
         }
     }
 
