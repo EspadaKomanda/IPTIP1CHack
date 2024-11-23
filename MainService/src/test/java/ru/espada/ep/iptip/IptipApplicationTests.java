@@ -3,22 +3,13 @@ package ru.espada.ep.iptip;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import ru.espada.ep.iptip.code_starter.impl.JavaCodeStarter;
 import ru.espada.ep.iptip.git.GitHubUtil;
-import ru.espada.ep.iptip.course.tests.answer.AnswerEntity;
-import ru.espada.ep.iptip.course.tests.code_test.CodeTest;
-import ru.espada.ep.iptip.course.tests.question.QuestionEntity;
-import ru.espada.ep.iptip.course.tests.question.QuestionType;
-import ru.espada.ep.iptip.user.UserEntity;
 import ru.espada.ep.iptip.user.permission.UserPermissionService;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.UUID;
 
 @SpringBootTest
 class IptipApplicationTests {

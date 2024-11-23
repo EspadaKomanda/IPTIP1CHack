@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.espada.ep.iptip.course.model.CourseResponseModel;
 import ru.espada.ep.iptip.course.model.CreateCourseModel;
-import ru.espada.ep.iptip.course.tests.TestEntity;
+import ru.espada.ep.iptip.course.test.TestEntity;
 import ru.espada.ep.iptip.user.UserEntity;
 import ru.espada.ep.iptip.user.UserRepository;
 import ru.espada.ep.iptip.user.UserService;

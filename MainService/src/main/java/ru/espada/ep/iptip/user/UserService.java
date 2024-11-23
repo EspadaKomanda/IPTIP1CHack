@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.espada.ep.iptip.course.CourseEntity;
 import ru.espada.ep.iptip.course.CourseRepository;
 import ru.espada.ep.iptip.course.CourseStatus;
-import ru.espada.ep.iptip.course.user.CourseCustomerEntity;
-import ru.espada.ep.iptip.course.user.CourseCustomerRepository;
+import ru.espada.ep.iptip.course.user_course.UserCourseEntity;
+import ru.espada.ep.iptip.course.user_course.UserCourseRepository;
 import ru.espada.ep.iptip.s3.S3Service;
-import ru.espada.ep.iptip.user.customer.CustomerEntity;
-import ru.espada.ep.iptip.user.customer.CustomerRepository;
+import ru.espada.ep.iptip.user.profile.ProfileEntity;
+import ru.espada.ep.iptip.user.profile.ProfileRepository;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
 import ru.espada.ep.iptip.user.models.request.CreateCustomerRequest;
 import ru.espada.ep.iptip.user.models.response.CustomerCourseResponse;
@@ -31,7 +31,6 @@ import ru.espada.ep.iptip.user.permission.UserPermissionService;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -42,11 +41,11 @@ public class UserService implements UserDetailsService {
     private EntityManager em;
     private UserRepository userRepository;
     private PasswordEncoder bCryptPasswordEncoder;
-    private CourseCustomerRepository courseCustomerRepository;
+    private UserCourseRepository userCourseRepository;
     private UserPermissionService userPermissionService;
     @Value("${users.page-size}")
     private int pageSize;
-    private CustomerRepository customerRepository;
+    private ProfileRepository profileRepository;
     private CourseRepository courseRepository;
     private S3Service s3Service;
 
@@ -99,14 +98,6 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    public CustomerEntity getCustomer(String name) {
-        return getUser(name).getCustomer();
-    }
-
-    public CustomerEntity getCustomer(Long id) {
-        return getUser(id).getCustomer();
-    }
-
     public boolean hasResponsibleCourse(UserEntity user, Long courseId) {
         if (user.getResponsibleCourses() == null) {
             return false;
@@ -121,29 +112,29 @@ public class UserService implements UserDetailsService {
         if (!Objects.equals(user.getId(), createCustomerRequest.getUserId())) {
             throw new IllegalArgumentException("exception.user.only_owner");
         }
-        if (user.getCustomer() != null) {
+        if (user.getProfile() != null) {
             throw new IllegalArgumentException("exception.user.customer_exists");
         }
 
-        CustomerEntity customer = new CustomerEntity();
-        customer.setName(createCustomerRequest.getName());
-        customer.setSurname(createCustomerRequest.getSurname());
-        customer.setPhone(createCustomerRequest.getPhone());
-        customer.setEmail(createCustomerRequest.getEmail());
+        ProfileEntity profile = new ProfileEntity();
+        profile.setName(createCustomerRequest.getName());
+        profile.setSurname(createCustomerRequest.getSurname());
+        profile.setPhone(createCustomerRequest.getPhone());
+        profile.setEmail(createCustomerRequest.getEmail());
         if (createCustomerRequest.getPatronymic() != null) {
-            customer.setPatronymic(createCustomerRequest.getPatronymic());
+            profile.setPatronymic(createCustomerRequest.getPatronymic());
         }
         if (createCustomerRequest.getBirthDate() != null) {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             try {
-                customer.setBirthDate(formatter.parse(createCustomerRequest.getBirthDate()));
+                profile.setBirthDate(formatter.parse(createCustomerRequest.getBirthDate()));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        customerRepository.save(customer);
-        user.setCustomer(customer);
+        profileRepository.save(profile);
+        user.setProfile(profile);
         userRepository.save(user);
     }
 
@@ -152,44 +143,6 @@ public class UserService implements UserDetailsService {
         return user.getResponsibleCourses().stream().toList();
     }
 
-    @Cacheable(value = "courses", key = "#username", unless = "#result == null")
-    @Transactional
-    public List<CustomerCourseResponse> getCustomerCourses(String username) {
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        if (user.getCustomer() == null) {
-            throw new IllegalArgumentException("exception.user.customer_not_found");
-        }
-        return user.getCustomer().getCourses().stream().map(CustomerCourseResponse::fromCourse).toList();
-    }
-
-    @CacheEvict(value = "courses", key = "#username")
-    public void attachCourseToCustomer(String username, Long courseId, Long startTime, Long endTime) {
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        if (user.getCustomer() == null) {
-            throw new IllegalArgumentException("exception.user.customer_not_found");
-        }
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("exception.course.not_found"));
-        user.getCustomer().getCourses().add(course);
-        CourseCustomerEntity courseCustomer = CourseCustomerEntity.builder()
-                .course(course)
-                .customer(user.getCustomer())
-                .startTime(startTime)
-                .endTime(endTime)
-                .status(CourseStatus.IN_PROGRESS)
-                .build();
-        courseCustomerRepository.save(courseCustomer);
-    }
-
-    @CacheEvict(value = "courses", key = "#username")
-    public void detachCourseFromCustomer(Principal principal, String username, Long courseId) {
-        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        if (user.getCustomer() == null) {
-            throw new IllegalArgumentException("exception.user.customer_not_found");
-        }
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> new IllegalArgumentException("exception.course.not_found"));
-        user.getCustomer().getCourses().remove(course);
-        userRepository.save(user);
-    }
 
     public CompletableFuture<String> uploadAvatar(String name, byte[] avatar) {
         UserEntity user = userRepository.findByUsername(name).orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -228,8 +181,8 @@ public class UserService implements UserDetailsService {
     }
 
     @Autowired
-    public void setCustomerRepository(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
+    public void setCustomerRepository(ProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
     }
 
     @Autowired
@@ -243,8 +196,8 @@ public class UserService implements UserDetailsService {
     }
 
     @Autowired
-    public void setCourseCustomerRepository(CourseCustomerRepository courseCustomerRepository) {
-        this.courseCustomerRepository = courseCustomerRepository;
+    public void setCourseCustomerRepository(UserCourseRepository userCourseRepository) {
+        this.userCourseRepository = userCourseRepository;
     }
 
     @Autowired

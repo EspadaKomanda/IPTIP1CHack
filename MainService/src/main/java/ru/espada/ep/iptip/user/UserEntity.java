@@ -9,8 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import ru.espada.ep.iptip.audit.Auditable;
 import ru.espada.ep.iptip.course.CourseEntity;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
-import ru.espada.ep.iptip.user.customer.CustomerEntity;
-import ru.espada.ep.iptip.user.permission.annotation.FieldPermission;
+import ru.espada.ep.iptip.user.profile.ProfileEntity;
 import ru.espada.ep.iptip.user.permission.annotation.Permission;
 
 import java.io.Serializable;
@@ -39,14 +38,17 @@ public class UserEntity extends Auditable implements UserDetails, Serializable {
     private String password;
     @Transient
     private String passwordConfirm;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "customer_id")
-    private CustomerEntity customer;
+    @JoinColumn(name = "profile_id")
+    private ProfileEntity profile;
+
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "study_group_user",
+    @JoinTable(name = "user_study_group",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "study_group_id"))
     private Set<StudyGroupEntity> studyGroups;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "course_responsible",

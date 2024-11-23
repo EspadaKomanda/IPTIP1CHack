@@ -1,5 +1,8 @@
 package ru.espada.ep.iptip.user.permission;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.espada.ep.iptip.user.UserEntity;
@@ -13,7 +16,12 @@ public class UserPermissionService {
 
     private final UserPermissionRepository userPermissionRepository;
     private final UserRepository userRepository;
+    @Getter
+    @Setter
     private Map<String, Object> permissions;
+    @Value("${user.permissions.special}")
+    @Getter
+    private String[] specialPermissions;
 
     public UserPermissionService(UserPermissionRepository userPermissionRepository, UserRepository userRepository) {
         this.userPermissionRepository = userPermissionRepository;
@@ -31,6 +39,7 @@ public class UserPermissionService {
                 addPermissionsRecursive(map, key, permissions);
             }
         }
+        if (specialPermissions != null) permissions.addAll(Arrays.asList(specialPermissions));
         return permissions;
     }
 

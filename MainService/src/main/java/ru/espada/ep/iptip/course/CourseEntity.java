@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.espada.ep.iptip.course.tests.TestEntity;
+import ru.espada.ep.iptip.course.test.TestEntity;
 import ru.espada.ep.iptip.user.UserEntity;
 import ru.espada.ep.iptip.user.permission.annotation.FieldPermission;
 import ru.espada.ep.iptip.user.permission.annotation.Permission;
@@ -38,11 +38,11 @@ public class CourseEntity {
     @FieldPermission
     private Long duration;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "course_customer",
-            joinColumns = @JoinColumn(name = "customer_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id"))
-    private UserEntity user;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_course",
+            joinColumns = @JoinColumn(name = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<UserEntity> user;
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @FieldPermission
@@ -50,11 +50,11 @@ public class CourseEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "course_responsible",
+            name = "teacher_course",
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @FieldPermission
-    private Set<UserEntity> responsibleUsers;
+    private Set<UserEntity> teachers;
 
 }

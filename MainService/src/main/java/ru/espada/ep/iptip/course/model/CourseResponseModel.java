@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.espada.ep.iptip.course.tests.TestEntity;
+import ru.espada.ep.iptip.course.test.TestEntity;
 import ru.espada.ep.iptip.user.UserEntity;
 
 import java.util.List;
