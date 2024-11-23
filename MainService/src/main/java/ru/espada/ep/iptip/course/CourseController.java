@@ -18,19 +18,19 @@ public class CourseController {
 
     private CourseService courseService;
 
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<?> createCourse(Principal principal, @Valid @RequestBody CreateCourseModel createCourseModel) {
         courseService.createCourse(principal, createCourseModel);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/get-course/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getCourse(@PathVariable Long id) {
         return ResponseEntity.ok(courseService.getCourse(id));
     }

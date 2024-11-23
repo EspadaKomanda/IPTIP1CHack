@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -69,17 +70,12 @@ public class UserAuthController {
     }
 
     @PostMapping("/aregister")
+    @PreAuthorize("hasPermission(#principal, 'users.admin')")
     public ResponseEntity<?> register(Principal principal, @Valid @RequestBody AuthRequest authRequest) {
         userService.saveUser(UserEntity.builder()
                         .username(authRequest.getLogin())
                         .password(authRequest.getPassword())
                         .build());
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PostMapping("/delete")
-    public ResponseEntity<?> delete(Principal principal, @Valid @RequestBody String username) {
-        userService.deleteUser(username);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

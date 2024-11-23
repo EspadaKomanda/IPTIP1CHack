@@ -1,5 +1,6 @@
 package ru.espada.ep.iptip.user;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,22 @@ public class AdminUserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/get-users/{page}")
-    @PreAuthorize("hasPermission(#page, 'users.admin')")
+    @GetMapping("/users/{page}")
+
     public ResponseEntity<?> getUsers(@PathVariable int page) {
         return ResponseEntity.ok(userService.allUsers(page));
+    }
+
+    @DeleteMapping("")
+    @PreAuthorize("hasPermission(#username, 'users.admin')")
+    public ResponseEntity<?> delete(@Valid @RequestBody String username) {
+        userService.deleteUser(username);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
+
 }
