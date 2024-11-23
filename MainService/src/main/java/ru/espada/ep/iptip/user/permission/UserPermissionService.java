@@ -70,6 +70,10 @@ public class UserPermissionService {
 
         List<String> permissions = userPermissionRepository.findAllByUserId(user.getId()).orElse(new HashSet<>()).stream().map(UserPermissionEntity::getName).toList();
         for (String permissionName : permissions) {
+            // special permission
+            if (permissionName.equals("admin")) {
+                return true;
+            }
             if (permission.startsWith(permissionName + ".")) {
                 return true;
             }

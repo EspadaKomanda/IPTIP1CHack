@@ -1,55 +1,46 @@
 package ru.espada.ep.iptip.user;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.espada.ep.iptip.course.CourseEntity;
-import ru.espada.ep.iptip.course.CourseRepository;
-import ru.espada.ep.iptip.course.CourseStatus;
-import ru.espada.ep.iptip.course.user_course.UserCourseEntity;
-import ru.espada.ep.iptip.course.user_course.UserCourseRepository;
 import ru.espada.ep.iptip.s3.S3Service;
+import ru.espada.ep.iptip.user.permission.UserPermissionEntity;
 import ru.espada.ep.iptip.user.profile.ProfileEntity;
 import ru.espada.ep.iptip.user.profile.ProfileRepository;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
-import ru.espada.ep.iptip.user.models.request.CreateCustomerRequest;
-import ru.espada.ep.iptip.user.models.response.CustomerCourseResponse;
+import ru.espada.ep.iptip.user.models.request.CreateProfileRequest;
 import ru.espada.ep.iptip.user.permission.UserPermissionService;
 
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Service
 public class UserService implements UserDetailsService {
-    @PersistenceContext
-    private EntityManager em;
+
     private UserRepository userRepository;
     private PasswordEncoder bCryptPasswordEncoder;
-    private UserCourseRepository userCourseRepository;
     private UserPermissionService userPermissionService;
     @Value("${users.page-size}")
     private int pageSize;
     private ProfileRepository profileRepository;
-    private CourseRepository courseRepository;
     private S3Service s3Service;
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -86,11 +77,6 @@ public class UserService implements UserDetailsService {
         userRepository.delete(user);
     }
 
-    public List<UserEntity> usergtList(Long idMin) {
-        return em.createQuery("SELECT u FROM UserEntity u WHERE u.id > :paramId", UserEntity.class)
-                .setParameter("paramId", idMin).getResultList();
-    }
-
     public UserEntity getUser(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
@@ -99,18 +85,10 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    public boolean hasResponsibleCourse(UserEntity user, Long courseId) {
-        if (user.getResponsibleCourses() == null) {
-            return false;
-        }
-        return user.getResponsibleCourses().stream()
-                .anyMatch(course -> course.getId().equals(courseId));
-    }
-
     @Transactional
-    public void createCustomer(Principal principal, CreateCustomerRequest createCustomerRequest) {
+    public void createProfile(Principal principal, CreateProfileRequest createProfileRequest) {
         UserEntity user = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        if (!Objects.equals(user.getId(), createCustomerRequest.getUserId())) {
+        if (!Objects.equals(user.getId(), createProfileRequest.getUserId())) {
             throw new IllegalArgumentException("exception.user.only_owner");
         }
         if (user.getProfile() != null) {
@@ -118,17 +96,17 @@ public class UserService implements UserDetailsService {
         }
 
         ProfileEntity profile = new ProfileEntity();
-        profile.setName(createCustomerRequest.getName());
-        profile.setSurname(createCustomerRequest.getSurname());
-        profile.setPhone(createCustomerRequest.getPhone());
-        profile.setEmail(createCustomerRequest.getEmail());
-        if (createCustomerRequest.getPatronymic() != null) {
-            profile.setPatronymic(createCustomerRequest.getPatronymic());
+        profile.setName(createProfileRequest.getName());
+        profile.setSurname(createProfileRequest.getSurname());
+        profile.setPhone(createProfileRequest.getPhone());
+        profile.setEmail(createProfileRequest.getEmail());
+        if (createProfileRequest.getPatronymic() != null) {
+            profile.setPatronymic(createProfileRequest.getPatronymic());
         }
-        if (createCustomerRequest.getBirthDate() != null) {
+        if (createProfileRequest.getBirthDate() != null) {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             try {
-                profile.setBirthDate(formatter.parse(createCustomerRequest.getBirthDate()));
+                profile.setBirthDate(formatter.parse(createProfileRequest.getBirthDate()));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
@@ -137,11 +115,6 @@ public class UserService implements UserDetailsService {
         profileRepository.save(profile);
         user.setProfile(profile);
         userRepository.save(user);
-    }
-
-    public List<CourseEntity> getResponsibleCourses(Principal principal) {
-        UserEntity user = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return user.getResponsibleCourses().stream().toList();
     }
 
     public CompletableFuture<String> uploadAvatar(String name, byte[] avatar) {
@@ -161,13 +134,29 @@ public class UserService implements UserDetailsService {
         return s3Service.getFileUrl("user-avatar", "user-" + user.getId()).join();
     }
 
-    public void addRole(AddRoleRequest addRoleRequest) {
+    public void addRole(String username, AddRoleRequest addRoleRequest) {
         String permission = addRoleRequest.getPermission();
         for (String key : addRoleRequest.getCredentials().keySet()) {
             permission = permission.replace("{" + key + "}", addRoleRequest.getCredentials().get(key));
         }
+
+        boolean hasParentPermission = userPermissionService.hasPermission(username, getParentPermission(permission));
+
+        if (!hasParentPermission) {
+            throw new RuntimeException("exception.user.permission_not_found");
+        }
+
         userPermissionService.addPermission(addRoleRequest.getUsername(), permission, addRoleRequest.getStartTime(), addRoleRequest.getEndTime());
     }
+
+    private String getParentPermission(String permission) {
+        int lastDotIndex = permission.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return "admin";
+        }
+        return permission.substring(0, lastDotIndex);
+    }
+
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -186,19 +175,10 @@ public class UserService implements UserDetailsService {
     }
 
     @Autowired
-    public void setCourseRepository(CourseRepository courseRepository) {
-        this.courseRepository = courseRepository;
-    }
-
-    @Autowired
     public void setS3Service(S3Service s3Service) {
         this.s3Service = s3Service;
     }
 
-    @Autowired
-    public void setCourseCustomerRepository(UserCourseRepository userCourseRepository) {
-        this.userCourseRepository = userCourseRepository;
-    }
 
     @Autowired
     public void setUserPermissionService(UserPermissionService userPermissionService) {

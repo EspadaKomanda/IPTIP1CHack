@@ -20,6 +20,7 @@ public class CourseService {
     private UserRepository userRepository;
     private UserService userService;
 
+
     public void createCourse(Principal principal, CreateCourseModel createCourseModel) {
         UserEntity userEntity = userRepository.findByUsername(principal.getName()).orElseThrow(() -> new RuntimeException("User not found"));
         CourseEntity courseEntity = CourseEntity.builder()

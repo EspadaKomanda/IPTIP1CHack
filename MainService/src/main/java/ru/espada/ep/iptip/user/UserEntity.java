@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import ru.espada.ep.iptip.audit.Auditable;
 import ru.espada.ep.iptip.course.CourseEntity;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
+import ru.espada.ep.iptip.user.permission.UserPermissionEntity;
 import ru.espada.ep.iptip.user.profile.ProfileEntity;
 import ru.espada.ep.iptip.user.permission.annotation.Permission;
 
@@ -57,9 +58,14 @@ public class UserEntity extends Auditable implements UserDetails, Serializable {
     )
     private Set<CourseEntity> responsibleCourses;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private List<UserPermissionEntity> permissions;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return permissions;
     }
 
     @Override

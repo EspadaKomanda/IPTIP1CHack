@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
-import ru.espada.ep.iptip.user.models.request.CreateCustomerRequest;
+import ru.espada.ep.iptip.user.models.request.CreateProfileRequest;
 
 import java.security.Principal;
 
@@ -22,21 +22,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/add-role")
-    public ResponseEntity<?> addRole(@RequestBody AddRoleRequest addRoleRequest) {
-        userService.addRole(addRoleRequest);
+    @PostMapping("/create-profile")
+    public ResponseEntity<?> createProfile(Principal principal, @Valid @RequestBody CreateProfileRequest createProfileRequest) {
+        userService.createProfile(principal, createProfileRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PostMapping("/create-customer")
-    public ResponseEntity<?> createCustomer(Principal principal, @Valid @RequestBody CreateCustomerRequest createCustomerRequest) {
-        userService.createCustomer(principal, createCustomerRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @GetMapping("/get-responsible-courses")
-    public ResponseEntity<?> getResponsibleCourses(Principal principal) {
-        return ResponseEntity.ok(userService.getResponsibleCourses(principal));
     }
 
     @GetMapping("/get-user")
@@ -54,11 +43,6 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(username));
     }
 
-    @GetMapping("/get-users/{page}")
-    public ResponseEntity<?> getUsers(@PathVariable int page) {
-        return ResponseEntity.ok(userService.allUsers(page));
-    }
-
     @PostMapping("/upload-avatar")
     public ResponseEntity<?> uploadAvatar(Principal principal, @RequestBody byte[] avatar) {
         String url = userService.uploadAvatar(principal.getName(), avatar).join();
@@ -66,7 +50,6 @@ public class UserController {
     }
 
     @GetMapping("/get-avatar-url")
-    @PreAuthorize("hasPermission(#addRoleRequest, 'course.{id}')")
     public ResponseEntity<?> getAvatarUrl(Principal principal, @Valid @RequestBody AddRoleRequest addRoleRequest) {
         return ResponseEntity.ok(userService.getAvatarUrl(principal.getName()));
     }

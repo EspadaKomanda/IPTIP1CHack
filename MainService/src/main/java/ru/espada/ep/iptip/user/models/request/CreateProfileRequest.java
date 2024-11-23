@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateCustomerRequest {
+public class CreateProfileRequest {
 
     private Long userId;
     @NotNull
@@ -23,5 +23,7 @@ public class CreateCustomerRequest {
     @NotNull
     private String email;
     private String birthDate;
+    private int semester;
+    private String studentIdCard;
 
 }

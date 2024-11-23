@@ -34,7 +34,7 @@ public class ProfileEntity implements Serializable {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     private boolean emailConfirmed;
-    private int semestr;
+    private int semester;
     private String studentIdCard;
 
 }
