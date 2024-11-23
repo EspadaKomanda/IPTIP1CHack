@@ -15,8 +15,7 @@ public class InstituteInfoResponse {
     public String Faculty;
     public String Institute;
     public String University;
-    // TODO: integrate group
-    public String Group = "Not implemented";
+    public String Group;
     public Integer Semester;
     public Integer Course = Semester == null ? null : Semester / 2;
 }

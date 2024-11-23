@@ -1,6 +1,7 @@
 package ru.espada.ep.iptip.user;
 
 import jakarta.annotation.PostConstruct;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,10 +16,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.espada.ep.iptip.course.CourseEntity;
+import ru.espada.ep.iptip.course.CourseRepository;
+import ru.espada.ep.iptip.course.user_course.UserCourseEntity;
+import ru.espada.ep.iptip.course.user_course.UserCourseRepository;
 import ru.espada.ep.iptip.s3.S3Service;
+import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
 import ru.espada.ep.iptip.university.UniversityEntity;
+import ru.espada.ep.iptip.university.UniversityRepository;
+import ru.espada.ep.iptip.university.institute.InstituteEntity;
+import ru.espada.ep.iptip.university.institute.InstituteRepository;
 import ru.espada.ep.iptip.university.institute.major.MajorEntity;
+import ru.espada.ep.iptip.university.institute.major.MajorRepository;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyEntity;
+import ru.espada.ep.iptip.university.institute.major.faculty.FacultyRepository;
 import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
 import ru.espada.ep.iptip.user.permission.UserPermissionEntity;
 import ru.espada.ep.iptip.user.profile.ProfileEntity;
@@ -33,17 +44,24 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
 public class UserService implements UserDetailsService {
 
     private UserRepository userRepository;
+    private ProfileRepository profileRepository;
+    private CourseRepository courseRepository;
+    private UserCourseRepository userCourseRepository;
+    private MajorRepository majorRepository;
+    private FacultyRepository facultyRepository;
+    private InstituteRepository instituteRepository;
+    private UniversityRepository universityRepository;
     private PasswordEncoder bCryptPasswordEncoder;
     private UserPermissionService userPermissionService;
     @Value("${users.page-size}")
     private int pageSize;
-    private ProfileRepository profileRepository;
     private S3Service s3Service;
 
     @Override
@@ -169,6 +187,30 @@ public class UserService implements UserDetailsService {
     }
 
     @Autowired
+    public void setCourseRepository(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+    }
+    @Autowired
+    public void setUserCourseRepository(UserCourseRepository userCourseRepository) {
+        this.userCourseRepository = userCourseRepository;
+    }
+
+    @Autowired
+    public void setUniversityRepository(UniversityRepository universityRepository) {
+        this.universityRepository = universityRepository;
+    }
+
+    @Autowired
+    public void setMajorRepository(MajorRepository majorRepository) {
+        this.majorRepository = majorRepository;
+    }
+
+    @Autowired
+    public void setInstituteRepository(InstituteRepository instituteRepository) {
+        this.instituteRepository = instituteRepository;
+    }
+
+    @Autowired
     public void setS3Service(S3Service s3Service) {
         this.s3Service = s3Service;
     }
@@ -179,18 +221,32 @@ public class UserService implements UserDetailsService {
         this.userPermissionService = userPermissionService;
     }
 
+    @Transactional
     public InstituteInfoResponse getInstituteInfo(String username) {
 
         UserEntity user = getUser(username);
         ProfileEntity profile = user.getProfile();
-        //GroupEntity group = profile.getGroup();
         int semester = profile.getSemester();
         int course = semester / 2;
 
-        // TODO: make the rest of the attributes: major, major_code, faculty, institute, group, university
+        StudyGroupEntity studyGroup = user.getStudyGroups().stream().findFirst().orElse(null);
+
+        // FIXME: this may be null
+        FacultyEntity faculty = studyGroup.getFaculty();
+        MajorEntity major = faculty.getMajor();
+        InstituteEntity insitute = major.getInstitute();
+        UniversityEntity university = insitute.getUniversity();
+
         InstituteInfoResponse response = new InstituteInfoResponse();
         response.Course = course;
         response.Semester = semester;
+        response.Major = major.getName();
+        response.MajorCode = major.getMajorCode();
+        response.Faculty = faculty.getName();
+        response.Institute = insitute.getName();
+        response.Group = studyGroup.getName();
+        response.University = university.getName();
+        response.Group = studyGroup.getName();
 
         return response;
     }

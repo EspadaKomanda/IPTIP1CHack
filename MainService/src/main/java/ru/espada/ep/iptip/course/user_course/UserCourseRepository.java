@@ -5,4 +5,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserCourseRepository extends JpaRepository<UserCourseEntity, Long> {
+    UserCourseEntity findUserCourseEntityByUserIdNotNull();
+
+    UserCourseEntity findUserCourseEntityByUserId(Long userId);
 }

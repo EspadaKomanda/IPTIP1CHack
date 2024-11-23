@@ -35,4 +35,6 @@ public class MajorEntity {
     @OneToMany(mappedBy = "major")
     @FieldPermission
     private List<FacultyEntity> faculties;
+
+    private String majorCode;
 }
