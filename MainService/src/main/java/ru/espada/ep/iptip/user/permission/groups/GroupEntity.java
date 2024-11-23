@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.espada.ep.iptip.user.permission.groups.permission_group.PermissionGroupEntity;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -26,6 +26,6 @@ public class GroupEntity {
 
     @OneToMany
     @JoinColumn(name = "group_id")
-    private Set<PermissionGroupEntity> permission_groups;
+    private List<PermissionGroupEntity> permission_groups;
 
 }

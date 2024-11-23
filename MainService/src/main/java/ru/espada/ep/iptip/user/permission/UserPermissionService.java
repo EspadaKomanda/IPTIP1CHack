@@ -48,6 +48,7 @@ public class UserPermissionService {
         if (user == null) {
             return;
         }
+
         UserPermissionEntity userPermissionEntity = UserPermissionEntity.builder()
                 .userId(user.getId())
                 .name(permission)
@@ -55,6 +56,46 @@ public class UserPermissionService {
                 .endTime(endTime)
                 .build();
         userPermissionRepository.save(userPermissionEntity);
+    }
+
+    public void addPermissions(String username, List<String> permissions) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (user == null) {
+            return;
+        }
+        for (String permission : permissions) {
+            UserPermissionEntity userPermissionEntity = UserPermissionEntity.builder()
+                    .userId(user.getId())
+                    .name(permission)
+                    .build();
+            userPermissionRepository.save(userPermissionEntity);
+        }
+    }
+
+    public void removePermission(String username, String permission) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (user == null) {
+            return;
+        }
+        userPermissionRepository.deleteUserPermissionEntityByUserIdAndName(user.getId(), permission);
+    }
+
+    public void removePermissions(String username, List<String> permissions) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (user == null) {
+            return;
+        }
+        for (String permission : permissions) {
+            userPermissionRepository.deleteUserPermissionEntityByUserIdAndName(user.getId(), permission);
+        }
+    }
+
+    public void removeAllPermissions(String username) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (user == null) {
+            return;
+        }
+        userPermissionRepository.deleteAllByUserId(user.getId());
     }
 
     public boolean hasPermission(String username, String permission) {
@@ -81,6 +122,10 @@ public class UserPermissionService {
         return false;
     }
 
+    public boolean hasParentPermission(String username, String permission) {
+        return hasPermission(username, getParentPermission(permission));
+    }
+
     private void addPermissionsRecursive(Map<String, Object> permissions, String permission, List<String> result) {
         for (String key : permissions.keySet()) {
             result.add(permission + "." + key);
@@ -94,6 +139,14 @@ public class UserPermissionService {
                 addPermissionsRecursive(map, permission + "." + key, result);
             }
         }
+    }
+
+    private String getParentPermission(String permission) {
+        int lastDotIndex = permission.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return "admin";
+        }
+        return permission.substring(0, lastDotIndex);
     }
 
 }

@@ -18,9 +18,9 @@ public class AdminUserController {
 
     private UserService userService;
 
-    @PostMapping("/add-role")
-    public ResponseEntity<?> addRole(Principal principal, @RequestBody AddRoleRequest addRoleRequest) {
-        userService.addRole(principal.getName(), addRoleRequest);
+    @PostMapping("/add-permission")
+    public ResponseEntity<?> addPermission(Principal principal, @RequestBody AddRoleRequest addRoleRequest) {
+        userService.addPermission(principal.getName(), addRoleRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

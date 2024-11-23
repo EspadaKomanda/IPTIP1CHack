@@ -69,7 +69,7 @@ public class UserAuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/register")
+    @PostMapping("/aregister")
     @PreAuthorize("hasPermission(#principal, 'users.admin')")
     public ResponseEntity<?> register(Principal principal, @Valid @RequestBody AuthRequest authRequest) {
         userService.saveUser(UserEntity.builder()

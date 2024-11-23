@@ -134,27 +134,17 @@ public class UserService implements UserDetailsService {
         return s3Service.getFileUrl("user-avatar", "user-" + user.getId()).join();
     }
 
-    public void addRole(String username, AddRoleRequest addRoleRequest) {
+    public void addPermission(String username, AddRoleRequest addRoleRequest) {
         String permission = addRoleRequest.getPermission();
         for (String key : addRoleRequest.getCredentials().keySet()) {
             permission = permission.replace("{" + key + "}", addRoleRequest.getCredentials().get(key));
         }
 
-        boolean hasParentPermission = userPermissionService.hasPermission(username, getParentPermission(permission));
-
-        if (!hasParentPermission) {
+        if (!userPermissionService.hasParentPermission(username, permission)) {
             throw new RuntimeException("exception.user.permission_not_found");
         }
 
         userPermissionService.addPermission(addRoleRequest.getUsername(), permission, addRoleRequest.getStartTime(), addRoleRequest.getEndTime());
-    }
-
-    private String getParentPermission(String permission) {
-        int lastDotIndex = permission.lastIndexOf('.');
-        if (lastDotIndex == -1) {
-            return "admin";
-        }
-        return permission.substring(0, lastDotIndex);
     }
 
 

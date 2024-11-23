@@ -20,4 +20,7 @@ public class PermissionGroupEntity {
 
     private String permission;
 
+    public PermissionGroupEntity(String permission) {
+        this.permission = permission;
+    }
 }
