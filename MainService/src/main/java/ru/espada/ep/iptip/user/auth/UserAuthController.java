@@ -27,10 +27,10 @@ import java.security.Principal;
 @RequestMapping("/auth")
 public class UserAuthController {
 
-    private UserService userService;
-    private AuthenticationManager authenticationManager;
-    private JwtCore jwtCore;
-    private LocalizationService localizationService;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtCore jwtCore;
+    private final LocalizationService localizationService;
     @Value("${auth.register.enabled}")
     private boolean registerEnabled;
 
@@ -69,7 +69,7 @@ public class UserAuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/aregister")
+    @PostMapping("/register")
     @PreAuthorize("hasPermission(#principal, 'users.admin')")
     public ResponseEntity<?> register(Principal principal, @Valid @RequestBody AuthRequest authRequest) {
         userService.saveUser(UserEntity.builder()

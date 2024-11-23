@@ -27,17 +27,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("")
+    @GetMapping("/user")
     public ResponseEntity<?> getUser(Principal principal) {
         return ResponseEntity.ok(userService.getUser(principal.getName()));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/user/id/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/user/username/{username}")
     public ResponseEntity<?> getUser(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUser(username));
     }
@@ -48,10 +48,9 @@ public class UserController {
         return ResponseEntity.ok(url);
     }
 
+    // FIXME: I think a path parameter is supposed to be here...
     @GetMapping("/avatar")
     public ResponseEntity<?> getAvatarUrl(Principal principal, @Valid @RequestBody AddRoleRequest addRoleRequest) {
         return ResponseEntity.ok(userService.getAvatarUrl(principal.getName()));
     }
-
-    //
 }
