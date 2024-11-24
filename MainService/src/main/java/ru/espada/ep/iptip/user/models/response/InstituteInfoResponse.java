@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class InstituteInfoResponse {
-    public String Major;
-    public String MajorCode;
-    public String Faculty;
-    public String Institute;
-    public String University;
-    public String Group;
-    public Integer Semester;
-    public Integer Course = Semester == null ? null : Semester / 2;
+    private String major;
+    private String majorCode;
+    private String faculty;
+    private String institute;
+    private String university;
+    private String studyGroup;
+    private Integer semester;
+    private Integer course = semester == null ? null : semester / 2;
 }

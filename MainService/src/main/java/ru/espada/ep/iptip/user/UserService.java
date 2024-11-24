@@ -170,33 +170,27 @@ public class UserService implements UserDetailsService {
         InstituteEntity insitute = major.getInstitute();
         UniversityEntity university = insitute.getUniversity();
 
-        InstituteInfoResponse response = new InstituteInfoResponse();
-        response.Course = course;
-        response.Semester = semester;
-        response.Major = major.getName();
-        response.MajorCode = major.getMajorCode();
-        response.Faculty = faculty.getName();
-        response.Institute = insitute.getName();
-        response.Group = studyGroup.getName();
-        response.University = university.getName();
-        response.Group = studyGroup.getName();
-
-        return response;
+        return InstituteInfoResponse.builder()
+                .major(major.getName())
+                .majorCode(major.getMajorCode())
+                .faculty(faculty.getName())
+                .institute(insitute.getName())
+                .university(university.getName())
+                .studyGroup(studyGroup.getName())
+                .semester(semester)
+                .course(course)
+                .build();
     }
 
     @Transactional
     public GetMyCoursesResponse getMyCourses(String username) {
         UserEntity user = getUser(username);
-        List<UserCourseEntity> userCourses = userCourseRepository
-                .findUserCourseEntitiesByUserId(user.getId())
-                .stream()
-                .filter(userCourseEntity -> userCourseEntity.getSemester() == user.getProfile().getSemester())
-                .toList();
+        List<UserCourseEntity> userCourses = userCourseRepository.findUserCourseEntitiesByUserIdAndSemester(user.getId(), user.getProfile().getSemester());
         List<CourseEntity> courses = courseRepository.findAllById(userCourses.stream().map(UserCourseEntity::getCourseId).toList());
 
-        GetMyCoursesResponse response = new GetMyCoursesResponse();
-        response.Courses = courses;
-        return response;
+        return GetMyCoursesResponse.builder()
+                .courses(courses)
+                .build();
     }
 
     public void addPermission(String username, AddRoleRequest addRoleRequest) {
