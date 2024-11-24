@@ -14,4 +14,6 @@ public interface UserCourseRepository extends JpaRepository<UserCourseEntity, Lo
     List<UserCourseEntity> findUserCourseEntitiesByUserId(Long userId);
 
     List<UserCourseEntity> findUserCourseEntitiesByUserIdAndSemester(Long userId, int semester);
+
+    UserCourseEntity findUserCourseEntityByUserIdAndCourseId(Long userId, Long courseId);
 }
