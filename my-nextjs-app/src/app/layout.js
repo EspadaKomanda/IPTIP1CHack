@@ -31,7 +31,7 @@ const myFont = localFont({
 export default function RootLayout({ children }) {
   return (
     <html lang="ru">
-      <body className={`bg-customColor1 ${myFont.className}`}>
+      <body className={`${myFont.className}`}>
         {children}
       </body>
     </html>
