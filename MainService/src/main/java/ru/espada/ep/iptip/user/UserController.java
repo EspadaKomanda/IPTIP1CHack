@@ -57,4 +57,9 @@ public class UserController {
     public ResponseEntity<?> getInstituteInfo(@PathVariable String username) {
         return ResponseEntity.ok(userService.getInstituteInfo(username));
     }
+
+    @GetMapping("/myCourses/username/{username}")
+    public ResponseEntity<?> getMyCourses(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getMyCourses(username));
+    }
 }

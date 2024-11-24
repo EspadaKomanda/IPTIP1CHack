@@ -30,6 +30,7 @@ import ru.espada.ep.iptip.university.institute.major.MajorEntity;
 import ru.espada.ep.iptip.university.institute.major.MajorRepository;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyEntity;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyRepository;
+import ru.espada.ep.iptip.user.models.response.GetMyCoursesResponse;
 import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
 import ru.espada.ep.iptip.user.permission.UserPermissionEntity;
 import ru.espada.ep.iptip.user.profile.ProfileEntity;
@@ -54,10 +55,7 @@ public class UserService implements UserDetailsService {
     private ProfileRepository profileRepository;
     private CourseRepository courseRepository;
     private UserCourseRepository userCourseRepository;
-    private MajorRepository majorRepository;
     private FacultyRepository facultyRepository;
-    private InstituteRepository instituteRepository;
-    private UniversityRepository universityRepository;
     private PasswordEncoder bCryptPasswordEncoder;
     private UserPermissionService userPermissionService;
     @Value("${users.page-size}")
@@ -156,71 +154,6 @@ public class UserService implements UserDetailsService {
         return s3Service.getFileUrl("user-avatar", "user-" + user.getId()).join();
     }
 
-    public void addPermission(String username, AddRoleRequest addRoleRequest) {
-        String permission = addRoleRequest.getPermission();
-        for (String key : addRoleRequest.getCredentials().keySet()) {
-            permission = permission.replace("{" + key + "}", addRoleRequest.getCredentials().get(key));
-        }
-
-        if (!userPermissionService.hasParentPermission(username, permission)) {
-            throw new RuntimeException("exception.user.permission_not_found");
-        }
-
-        userPermissionService.addPermission(addRoleRequest.getUsername(), permission, addRoleRequest.getStartTime(), addRoleRequest.getEndTime());
-    }
-
-
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Autowired
-    @Lazy
-    public void setBCryptPasswordEncoder(PasswordEncoder bCryptPasswordEncoder) {
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-    @Autowired
-    public void setCustomerRepository(ProfileRepository profileRepository) {
-        this.profileRepository = profileRepository;
-    }
-
-    @Autowired
-    public void setCourseRepository(CourseRepository courseRepository) {
-        this.courseRepository = courseRepository;
-    }
-    @Autowired
-    public void setUserCourseRepository(UserCourseRepository userCourseRepository) {
-        this.userCourseRepository = userCourseRepository;
-    }
-
-    @Autowired
-    public void setUniversityRepository(UniversityRepository universityRepository) {
-        this.universityRepository = universityRepository;
-    }
-
-    @Autowired
-    public void setMajorRepository(MajorRepository majorRepository) {
-        this.majorRepository = majorRepository;
-    }
-
-    @Autowired
-    public void setInstituteRepository(InstituteRepository instituteRepository) {
-        this.instituteRepository = instituteRepository;
-    }
-
-    @Autowired
-    public void setS3Service(S3Service s3Service) {
-        this.s3Service = s3Service;
-    }
-
-
-    @Autowired
-    public void setUserPermissionService(UserPermissionService userPermissionService) {
-        this.userPermissionService = userPermissionService;
-    }
-
     @Transactional
     public InstituteInfoResponse getInstituteInfo(String username) {
 
@@ -249,5 +182,68 @@ public class UserService implements UserDetailsService {
         response.Group = studyGroup.getName();
 
         return response;
+    }
+
+    @Transactional
+    public GetMyCoursesResponse getMyCourses(String username) {
+        UserEntity user = getUser(username);
+        List<UserCourseEntity> userCourses = userCourseRepository
+                .findUserCourseEntitiesByUserId(user.getId())
+                .stream()
+                .filter(userCourseEntity -> userCourseEntity.getSemester() == user.getProfile().getSemester())
+                .toList();
+        List<CourseEntity> courses = courseRepository.findAllById(userCourses.stream().map(UserCourseEntity::getCourseId).toList());
+
+        GetMyCoursesResponse response = new GetMyCoursesResponse();
+        response.Courses = courses;
+        return response;
+    }
+
+    public void addPermission(String username, AddRoleRequest addRoleRequest) {
+        String permission = addRoleRequest.getPermission();
+        for (String key : addRoleRequest.getCredentials().keySet()) {
+            permission = permission.replace("{" + key + "}", addRoleRequest.getCredentials().get(key));
+        }
+
+        if (!userPermissionService.hasParentPermission(username, permission)) {
+            throw new RuntimeException("exception.user.permission_not_found");
+        }
+
+        userPermissionService.addPermission(addRoleRequest.getUsername(), permission, addRoleRequest.getStartTime(), addRoleRequest.getEndTime());
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Autowired
+    @Lazy
+    public void setBCryptPasswordEncoder(PasswordEncoder bCryptPasswordEncoder) {
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+    @Autowired
+    public void setCustomerRepository(ProfileRepository profileRepository) {
+        this.profileRepository = profileRepository;
+    }
+
+    @Autowired
+    public void setCourseRepository(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+    }
+    @Autowired
+    public void setUserCourseRepository(UserCourseRepository userCourseRepository) {
+        this.userCourseRepository = userCourseRepository;
+    }
+
+    @Autowired
+    public void setS3Service(S3Service s3Service) {
+        this.s3Service = s3Service;
+    }
+
+    @Autowired
+    public void setUserPermissionService(UserPermissionService userPermissionService) {
+        this.userPermissionService = userPermissionService;
     }
 }
