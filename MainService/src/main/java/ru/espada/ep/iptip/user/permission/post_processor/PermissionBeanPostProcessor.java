@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import ru.espada.ep.iptip.user.permission.UserPermissionService;
 import ru.espada.ep.iptip.user.permission.annotation.FieldPermission;
 import ru.espada.ep.iptip.user.permission.annotation.Permission;
 
@@ -28,18 +29,11 @@ public class PermissionBeanPostProcessor implements BeanPostProcessor {
                     beansWithPermission.put(permission.value(), entity.getJavaType());
                 }
             }
-            Field field = null;
-            try {
-                field = bean.getClass().getDeclaredField("permissions");
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            }
-            field.setAccessible(true);
-            try {
-                field.set(bean, getPermissions(beansWithPermission));
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
+
+            Map<String, Object> permissions = getPermissions(beansWithPermission);
+            UserPermissionService userPermissionService = (UserPermissionService) bean;
+            userPermissionService.setPermissions(permissions);
+
         }
         return bean;
     }

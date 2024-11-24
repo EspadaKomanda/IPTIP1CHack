@@ -1,7 +1,11 @@
 package ru.espada.ep.iptip.user.permission;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.espada.ep.iptip.user.UserEntity;
 import ru.espada.ep.iptip.user.UserRepository;
 import ru.espada.ep.iptip.user.UserService;
@@ -13,7 +17,12 @@ public class UserPermissionService {
 
     private final UserPermissionRepository userPermissionRepository;
     private final UserRepository userRepository;
+    @Getter
+    @Setter
     private Map<String, Object> permissions;
+    @Value("${user.permissions.special:null}")
+    @Getter
+    private List<String> specialPermissions;
 
     public UserPermissionService(UserPermissionRepository userPermissionRepository, UserRepository userRepository) {
         this.userPermissionRepository = userPermissionRepository;
@@ -31,14 +40,17 @@ public class UserPermissionService {
                 addPermissionsRecursive(map, key, permissions);
             }
         }
+        if (specialPermissions != null) permissions.addAll(specialPermissions);
         return permissions;
     }
 
+    @Transactional
     public void addPermission(String username, String permission, Long startTime, Long endTime) {
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if (user == null) {
             return;
         }
+
         UserPermissionEntity userPermissionEntity = UserPermissionEntity.builder()
                 .userId(user.getId())
                 .name(permission)
@@ -48,6 +60,51 @@ public class UserPermissionService {
         userPermissionRepository.save(userPermissionEntity);
     }
 
+    @Transactional
+    public void addPermissions(String username, List<String> permissions, Long startTime, Long endTime) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (user == null) {
+            return;
+        }
+        for (String permission : permissions) {
+            UserPermissionEntity userPermissionEntity = UserPermissionEntity.builder()
+                    .userId(user.getId())
+                    .name(permission)
+                    .endTime(startTime)
+                    .startTime(endTime)
+                    .build();
+            userPermissionRepository.save(userPermissionEntity);
+        }
+    }
+
+    public void removePermission(String username, String permission) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (user == null) {
+            return;
+        }
+        userPermissionRepository.deleteUserPermissionEntityByUserIdAndName(user.getId(), permission);
+    }
+
+    public void removePermissions(String username, List<String> permissions) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (user == null) {
+            return;
+        }
+        for (String permission : permissions) {
+            userPermissionRepository.deleteUserPermissionEntityByUserIdAndName(user.getId(), permission);
+        }
+    }
+
+    @Transactional
+    public void removeAllPermissions(String username) {
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (user == null) {
+            return;
+        }
+        userPermissionRepository.deleteAllByUserId(user.getId());
+    }
+
+    @Transactional
     public boolean hasPermission(String username, String permission) {
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         if (user == null) {
@@ -61,11 +118,20 @@ public class UserPermissionService {
 
         List<String> permissions = userPermissionRepository.findAllByUserId(user.getId()).orElse(new HashSet<>()).stream().map(UserPermissionEntity::getName).toList();
         for (String permissionName : permissions) {
+            // special permission
+            if (permissionName.equals("admin")) {
+                return true;
+            }
             if (permission.startsWith(permissionName + ".")) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Transactional
+    public boolean hasParentPermission(String username, String permission) {
+        return hasPermission(username, getParentPermission(permission));
     }
 
     private void addPermissionsRecursive(Map<String, Object> permissions, String permission, List<String> result) {
@@ -81,6 +147,14 @@ public class UserPermissionService {
                 addPermissionsRecursive(map, permission + "." + key, result);
             }
         }
+    }
+
+    private String getParentPermission(String permission) {
+        int lastDotIndex = permission.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return "admin";
+        }
+        return permission.substring(0, lastDotIndex);
     }
 
 }
