@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DetachStudyGroupFromCourseModel {
-    private Long studyGroupId;
+public class UserCourseModel {
+
     private Long courseId;
+    private Long userId;
+
 }

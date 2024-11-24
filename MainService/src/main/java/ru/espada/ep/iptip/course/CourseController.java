@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ru.espada.ep.iptip.course.model.CreateCourseLearningResourceCategoryModel;
 import ru.espada.ep.iptip.course.model.*;
 
 import java.security.Principal;
@@ -19,7 +20,8 @@ public class CourseController {
     private CourseService courseService;
 
     @PostMapping("attachUser")
-    public ResponseEntity<?> attachUserToCourse(@Valid @RequestBody AttachUserToCourseModel attachUserToCourseModel) {
+    @PreAuthorize("hasPermission(#attachUserToCourseModel, 'course.amdin.{courseId}')")
+    public ResponseEntity<?> attachUserToCourse(@Valid @RequestBody UserCourseModel attachUserToCourseModel) {
         courseService.attachUserToCourse(
                 attachUserToCourseModel.getCourseId(),
                 attachUserToCourseModel.getUserId()
@@ -28,7 +30,8 @@ public class CourseController {
     }
 
     @DeleteMapping("detachUser")
-    public ResponseEntity<?> detachUserFromCourse(@Valid @RequestBody DetachUserFromCourseModel detachUserFromCourseModel) {
+    @PreAuthorize("hasPermission(#detachUserFromCourseModel, 'course.amdin.{courseId}')")
+    public ResponseEntity<?> detachUserFromCourse(@Valid @RequestBody UserCourseModel detachUserFromCourseModel) {
         courseService.detachUserFromCourse(
                 detachUserFromCourseModel.getCourseId(),
                 detachUserFromCourseModel.getUserId()
@@ -36,21 +39,17 @@ public class CourseController {
         return ResponseEntity.ok().build();
     }
 
+    // защищено!
     @PostMapping("attachStudyGroup")
-    public ResponseEntity<?> attachStudyGroupToCourse(@Valid @RequestBody AttachStudyGroupToCourseModel attachStudyGroupToCourseModel) {
-        courseService.attachStudyGroupToCourse(
-                attachStudyGroupToCourseModel.getCourseId(),
-                attachStudyGroupToCourseModel.getStudyGroupId()
-        );
+    public ResponseEntity<?> attachStudyGroupToCourse(Principal principal, @Valid @RequestBody StudyGroupCourseModel attachStudyGroupToCourseModel) {
+        courseService.attachStudyGroupToCourse(principal, attachStudyGroupToCourseModel);
         return ResponseEntity.ok().build();
     }
 
+    // защищено!
     @DeleteMapping("detachStudyGroup/")
-    public ResponseEntity<?> detachStudyGroupFromCourse(@Valid @RequestBody DetachStudyGroupFromCourseModel detachStudyGroupFromCourseModel) {
-        courseService.detachStudyGroupFromCourse(
-                detachStudyGroupFromCourseModel.getCourseId(),
-                detachStudyGroupFromCourseModel.getStudyGroupId()
-        );
+    public ResponseEntity<?> detachStudyGroupFromCourse(Principal principal, @Valid @RequestBody StudyGroupCourseModel detachStudyGroupFromCourseModel) {
+        courseService.detachStudyGroupFromCourse(principal, detachStudyGroupFromCourseModel);
         return ResponseEntity.ok().build();
     }
 
@@ -60,21 +59,36 @@ public class CourseController {
     }
 
     @PostMapping("course")
-    public ResponseEntity<?> createCourse(Principal principal, @Valid @RequestBody CreateCourseModel createCourseModel) {
-        // FIXME: is principal supposed to be here?
-        courseService.createCourse(principal, createCourseModel);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PreAuthorize("hasPermission(#createCourseModel, 'university.{universityId}.institute.{instituteIdd}.major.{majorId}.faculty.{facultyId}.courses')")
+    public ResponseEntity<?> createCourse(@Valid @RequestBody CreateCourseModel createCourseModel) {
+        Long id = courseService.createCourse(createCourseModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
-        courseService.deleteCourse(id);
+    @PreAuthorize("hasPermission(#id, 'course.amdin.{id}')")
+    public ResponseEntity<?> deleteCourse(Principal principal, @PathVariable Long id) {
+        courseService.deleteCourse(principal, id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getCourse(@PathVariable Long id) {
         return ResponseEntity.ok(courseService.getCourse(id));
+    }
+
+    @PostMapping("/resource/category")
+    @PreAuthorize("hasPermission(#createCourseLearningResourceCategoryModel, 'course.amdin.{courseId}')")
+    public ResponseEntity<?> createCourseLearningResourceCategory(@Valid @RequestBody CreateCourseLearningResourceCategoryModel createCourseLearningResourceCategoryModel) {
+        Long id = courseService.createCourseLearningResourceCategory(createCourseLearningResourceCategoryModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
+    }
+
+    @DeleteMapping("/resource/category/{id}")
+    @PreAuthorize("hasPermission(#id, 'course.amdin.{id}')")
+    public ResponseEntity<?> deleteCourseLearningResourceCategory(@PathVariable Long id) {
+        courseService.deleteCourseLearningResourceCategory(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Autowired

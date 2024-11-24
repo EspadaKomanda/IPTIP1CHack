@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AttachStudyGroupToCourseModel {
+public class StudyGroupCourseModel {
+
     private Long studyGroupId;
     private Long courseId;
+
 }

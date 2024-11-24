@@ -1,4 +1,4 @@
-package ru.espada.ep.iptip.course.learning_resource_category.model;
+package ru.espada.ep.iptip.course.model;
 
 import lombok.*;
 import ru.espada.ep.iptip.audit.Auditable;
@@ -10,5 +10,6 @@ import ru.espada.ep.iptip.audit.Auditable;
 public class CreateCourseLearningResourceCategoryModel extends Auditable {
 
     private String name;
+    private Long courseId;
 
 }
