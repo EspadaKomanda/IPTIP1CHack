@@ -18,6 +18,9 @@ public class CourseController {
 
     private CourseService courseService;
 
+    // TODO: add methods: attach user to course, attach study group to course, detach user from course, detach study group from course
+    // TODO: add methods: get users curses
+
     @PostMapping("")
     public ResponseEntity<?> createCourse(Principal principal, @Valid @RequestBody CreateCourseModel createCourseModel) {
         courseService.createCourse(principal, createCourseModel);

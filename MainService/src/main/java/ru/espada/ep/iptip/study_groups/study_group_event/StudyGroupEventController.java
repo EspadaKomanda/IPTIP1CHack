@@ -9,5 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/studyGroupEvent")
 public class StudyGroupEventController {
 
+    // TODO: add methods: create event, modify event, delete event
+
 }
 
