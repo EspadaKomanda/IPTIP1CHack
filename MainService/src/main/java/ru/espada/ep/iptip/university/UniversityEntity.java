@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.espada.ep.iptip.audit.Auditable;
 import ru.espada.ep.iptip.university.institute.InstituteEntity;
 import ru.espada.ep.iptip.user.permission.annotation.FieldPermission;
 import ru.espada.ep.iptip.user.permission.annotation.Permission;
@@ -18,7 +19,7 @@ import java.util.Set;
 @Entity
 @Table(name = "university")
 @Permission(value = "university", children = {InstituteEntity.class}, isStart = true)
-public class UniversityEntity {
+public class UniversityEntity extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

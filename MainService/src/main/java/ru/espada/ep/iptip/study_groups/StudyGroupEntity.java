@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.espada.ep.iptip.audit.Auditable;
 import ru.espada.ep.iptip.event.EventEntity;
 import ru.espada.ep.iptip.study_groups.study_group_event.StudyGroupEventEntity;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyEntity;
@@ -21,7 +22,7 @@ import java.util.Set;
 @Entity
 @Table(name = "study_group")
 @Permission(children = {UserEntity.class, EventEntity.class}, value = "study_group")
-public class StudyGroupEntity {
+public class StudyGroupEntity extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

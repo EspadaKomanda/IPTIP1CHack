@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.espada.ep.iptip.audit.Auditable;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,7 +16,7 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "customers")
-public class ProfileEntity implements Serializable {
+public class ProfileEntity  extends Auditable implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

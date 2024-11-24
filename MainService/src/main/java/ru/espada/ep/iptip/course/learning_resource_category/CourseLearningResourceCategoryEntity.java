@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.espada.ep.iptip.audit.Auditable;
 import ru.espada.ep.iptip.course.CourseEntity;
 
 @Data
@@ -13,7 +14,7 @@ import ru.espada.ep.iptip.course.CourseEntity;
 @Builder
 @Entity
 @Table(name = "course_learning_resource_category")
-public class CourseLearningResourceCategoryEntity {
+public class CourseLearningResourceCategoryEntity extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

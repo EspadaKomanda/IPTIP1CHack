@@ -21,13 +21,15 @@ public class PermissionElevator implements PermissionEvaluator {
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         String permissionName = permission.toString();
-        for (Field field : targetDomainObject.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            try {
-                String value = field.get(targetDomainObject).toString();
-                permissionName = permissionName.replace("{" + field.getName() + "}", value);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+        if (targetDomainObject != null) {
+            for (Field field : targetDomainObject.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                try {
+                    String value = field.get(targetDomainObject).toString();
+                    permissionName = permissionName.replace("{" + field.getName() + "}", value);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return userPermissionService.hasPermission(authentication.getName(), permissionName);

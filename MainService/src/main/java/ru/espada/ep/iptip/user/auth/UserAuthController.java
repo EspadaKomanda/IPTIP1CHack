@@ -1,5 +1,6 @@
 package ru.espada.ep.iptip.user.auth;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -70,8 +71,9 @@ public class UserAuthController {
     }
 
     @PostMapping("/aregister")
-    @PreAuthorize("hasPermission(#principal, 'users.admin')")
-    public ResponseEntity<?> register(Principal principal, @Valid @RequestBody AuthRequest authRequest) {
+    @PreAuthorize("hasPermission(#authRequest, 'users.admin')")
+    @SecurityRequirement(name = "JWT")
+    public ResponseEntity<?> aregister(@Valid @RequestBody AuthRequest authRequest) {
         userService.saveUser(UserEntity.builder()
                         .username(authRequest.getLogin())
                         .password(authRequest.getPassword())

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import ru.espada.ep.iptip.audit.Auditable;
 import ru.espada.ep.iptip.user.UserEntity;
 
 @Data
@@ -14,7 +15,7 @@ import ru.espada.ep.iptip.user.UserEntity;
 @Builder
 @Entity
 @Table(name = "user_permissions")
-public class UserPermissionEntity implements GrantedAuthority {
+public class UserPermissionEntity extends Auditable implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
