@@ -18,9 +18,6 @@ public class CourseController {
 
     private CourseService courseService;
 
-    // TODO: add methods: attach study group to course, detach study group from course
-    // TODO: add methods: get users courses
-
     @PostMapping("attachUser/course/{courseId}/user/{userId}")
     public ResponseEntity<?> attachUserToCourse(Principal principal, @PathVariable Long courseId, @PathVariable Long userId) {
         courseService.attachUserToCourse(courseId, userId);
@@ -31,6 +28,23 @@ public class CourseController {
     public ResponseEntity<?> detachUserFromCourse(Principal principal, @PathVariable Long courseId, @PathVariable Long userId) {
         courseService.detachUserFromCourse(courseId, userId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("attachStudyGroup/course/{courseId}/studyGroup/{studyGroupId}")
+    public ResponseEntity<?> attachStudyGroupToCourse(Principal principal, @PathVariable Long courseId, @PathVariable Long studyGroupId) {
+        courseService.attachStudyGroupToCourse(courseId, studyGroupId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("detachStudyGroup/course/{courseId}/studyGroup/{studyGroupId}")
+    public ResponseEntity<?> detachStudyGroupFromCourse(Principal principal, @PathVariable Long courseId, @PathVariable Long studyGroupId) {
+        courseService.detachStudyGroupFromCourse(courseId, studyGroupId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("userCourses/{userId}")
+    public ResponseEntity<?> getUserCourses(@PathVariable Long userId) {
+        return ResponseEntity.ok(courseService.getUserCourses(userId));
     }
 
     @PostMapping("/{id}")
