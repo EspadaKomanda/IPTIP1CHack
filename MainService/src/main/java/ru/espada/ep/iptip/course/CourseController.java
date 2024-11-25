@@ -34,7 +34,7 @@ public class CourseController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasPermission(#id, 'course.amdin.{id}')")
+    @PreAuthorize("hasPermission(#id, 'course.amdin.{long}')")
     public ResponseEntity<?> deleteCourse(Principal principal, @PathVariable Long id) {
         courseService.deleteCourse(principal, id);
         return ResponseEntity.ok().build();
@@ -103,14 +103,14 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
-    @GetMapping("/resource/categories")
-    @PreAuthorize("hasPermission(#id, 'course.amdin.{id}')")
+    @GetMapping("/resource/categories/{id}")
+    @PreAuthorize("hasPermission(#id, 'course.amdin.{long}')")
     public ResponseEntity<List<CourseLearningResourceCategoryEntityDto>> getCourseLearningResourceCategory(@PathVariable Long id) {
         return ResponseEntity.ok(courseService.getCourseLearningResourceCategories(id));
     }
 
     @DeleteMapping("/resource/category/{id}")
-    @PreAuthorize("hasPermission(#id, 'course.amdin.{id}')")
+    @PreAuthorize("hasPermission(#id, 'course.amdin.{long}')")
     public ResponseEntity<Long> deleteCourseLearningResourceCategory(@PathVariable Long id) {
         courseService.deleteCourseLearningResourceCategory(id);
         return ResponseEntity.status(HttpStatus.OK).build();

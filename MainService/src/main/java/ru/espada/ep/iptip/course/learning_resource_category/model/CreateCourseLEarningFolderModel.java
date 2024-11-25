@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class CreateCourseLEarningFolderModel {
 
     private String name;
+    private Long categoryId;
 
 }
