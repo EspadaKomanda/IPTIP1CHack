@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface StudyGroupEventRepository extends JpaRepository<StudyGroupEventEntity, Long> {
+    StudyGroupEventEntity findByEventIdAndStudyGroupId(Long eventId, Long studyGroupId);
 }
