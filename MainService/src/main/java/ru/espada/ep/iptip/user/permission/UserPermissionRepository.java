@@ -11,4 +11,7 @@ public interface UserPermissionRepository extends JpaRepository<UserPermissionEn
     boolean existsUserPermissionEntityByUserIdAndName(Long userId, String name);
     Optional<Set<UserPermissionEntity>> findAllByUserId(Long userId);
 
+    void deleteUserPermissionEntityByUserIdAndName(Long id, String permission);
+
+    void deleteAllByUserId(Long id);
 }

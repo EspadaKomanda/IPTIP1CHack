@@ -4,14 +4,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.espada.ep.iptip.exceptions.custom.OperationNotAccessException;
+import ru.espada.ep.iptip.exceptions.custom.OperationNotPermittedException;
 import ru.espada.ep.iptip.exceptions.response.OperationStatus;
 
 @ControllerAdvice
 public class OperationNotAccessExceptionAdvice {
 
-    @ExceptionHandler(OperationNotAccessException.class)
-    public ResponseEntity<?> handleOperationNotAccessException(OperationNotAccessException e) {
+    @ExceptionHandler(OperationNotPermittedException.class)
+    public ResponseEntity<?> handleOperationNotAccessException(OperationNotPermittedException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 OperationStatus.builder()
                         .status(false)

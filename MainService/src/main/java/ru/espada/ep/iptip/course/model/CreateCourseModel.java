@@ -11,7 +11,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CreateCourseModel {
 
+    private Long UniversityId;
+    private Long InstituteId;
+    private Long MajorId;
+    private Long FacultyId;
     private String name;
-    private Long duration;
+    private String description;
 
 }
