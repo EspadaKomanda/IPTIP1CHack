@@ -14,6 +14,6 @@ namespace AnalyticService.Services.UserEventAttendanses
         public Task<bool> UpdateUserEventAttendance(UserEventAttendanceRequest userEventAttendanceRequest);
         public Task<bool> DeleteUserEventAttendance(DeleteRequest deleteRequest);
         public Task<UserEventAttendance> GetUserEventAttendance(long id);
-        public IQueryable<UserEventAttendance> GetUserEventAttendance();
+        public IQueryable<UserEventAttendance> GetUserEventAttendances();
     }
 }
