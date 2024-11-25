@@ -4,12 +4,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.espada.ep.iptip.event.models.requests.CreateEventForStudyGroupsRequest;
 import ru.espada.ep.iptip.event.models.requests.CreateEventRequest;
+import ru.espada.ep.iptip.event.models.requests.ModifyEventRequest;
 
 import java.security.Principal;
 
@@ -29,6 +27,12 @@ public class EventController {
     @PostMapping("/eventForStudyGroups")
     public ResponseEntity<?> createEventForStudyGroups(Principal principal, @Valid @RequestBody CreateEventForStudyGroupsRequest request) {
         EventEntity eventEntity = eventService.createEventForStudyGroups(principal, request);
+        return ResponseEntity.ok().body(eventEntity);
+    }
+
+    @PatchMapping("event/")
+    public ResponseEntity<?> modifyEvent(Principal principal, @Valid @RequestBody ModifyEventRequest request) {
+        EventEntity eventEntity = eventService.modifyEvent(principal, request);
         return ResponseEntity.ok().body(eventEntity);
     }
 
