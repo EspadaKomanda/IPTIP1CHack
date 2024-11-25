@@ -1,27 +1,21 @@
 package ru.espada.ep.iptip.security.premission_elevators;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import ru.espada.ep.iptip.table_helper.TableHelperService;
 import ru.espada.ep.iptip.user.permission.UserPermissionService;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Component
 public class PermissionElevator implements PermissionEvaluator {
 
     private final UserPermissionService userPermissionService;
-    private final TableHelperService tableHelperService;
 
-    public PermissionElevator(UserPermissionService userPermissionService, TableHelperService tableHelperService) {
+    public PermissionElevator(UserPermissionService userPermissionService) {
         this.userPermissionService = userPermissionService;
-        this.tableHelperService = tableHelperService;
     }
 
     @Override

@@ -28,6 +28,7 @@ public class UserTestAttemptAnswerEntity {
     private QuestionEntity question;
 
     private String content;
-    private boolean is_correct;
+    private TestAttemptAnswerStatus status;
+    private Long statusModifiedAt;
 
 }

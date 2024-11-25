@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.espada.ep.iptip.course.model.CreateCourseLearningResourceCategoryModel;
 import ru.espada.ep.iptip.course.model.*;
+import ru.espada.ep.iptip.course.test.model.CreateTestModel;
 
 import java.security.Principal;
 
@@ -18,6 +19,33 @@ import java.security.Principal;
 public class CourseController {
 
     private CourseService courseService;
+
+    //
+    // Курс CRUD
+    //
+
+    @PostMapping("course")
+    @PreAuthorize("hasPermission(#createCourseModel, 'university.{universityId}.institute.{instituteIdd}.major.{majorId}.faculty.{facultyId}.courses')")
+    public ResponseEntity<?> createCourse(Principal principal, @Valid @RequestBody CreateCourseModel createCourseModel) {
+        Long id = courseService.createCourse(principal, createCourseModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasPermission(#id, 'course.amdin.{id}')")
+    public ResponseEntity<?> deleteCourse(Principal principal, @PathVariable Long id) {
+        courseService.deleteCourse(principal, id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCourse(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.getCourse(id));
+    }
+
+    //
+    // Пользователи
+    //
 
     @PostMapping("attachUser")
     @PreAuthorize("hasPermission(#attachUserToCourseModel, 'course.amdin.{courseId}')")
@@ -39,6 +67,15 @@ public class CourseController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("userCourses/{userId}")
+    public ResponseEntity<?> getUserCourses(@PathVariable Long userId) {
+        return ResponseEntity.ok(courseService.getUserCourses(userId));
+    }
+
+    //
+    // Ученические группы
+    //
+
     // защищено!
     @PostMapping("attachStudyGroup")
     public ResponseEntity<?> attachStudyGroupToCourse(Principal principal, @Valid @RequestBody StudyGroupCourseModel attachStudyGroupToCourseModel) {
@@ -53,29 +90,9 @@ public class CourseController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("userCourses/{userId}")
-    public ResponseEntity<?> getUserCourses(@PathVariable Long userId) {
-        return ResponseEntity.ok(courseService.getUserCourses(userId));
-    }
-
-    @PostMapping("course")
-    @PreAuthorize("hasPermission(#createCourseModel, 'university.{universityId}.institute.{instituteIdd}.major.{majorId}.faculty.{facultyId}.courses')")
-    public ResponseEntity<?> createCourse(@Valid @RequestBody CreateCourseModel createCourseModel) {
-        Long id = courseService.createCourse(createCourseModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(id);
-    }
-
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasPermission(#id, 'course.amdin.{id}')")
-    public ResponseEntity<?> deleteCourse(Principal principal, @PathVariable Long id) {
-        courseService.deleteCourse(principal, id);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCourse(@PathVariable Long id) {
-        return ResponseEntity.ok(courseService.getCourse(id));
-    }
+    //
+    // Ресурсы курсов
+    //
 
     @PostMapping("/resource/category")
     @PreAuthorize("hasPermission(#createCourseLearningResourceCategoryModel, 'course.amdin.{courseId}')")
@@ -89,6 +106,17 @@ public class CourseController {
     public ResponseEntity<?> deleteCourseLearningResourceCategory(@PathVariable Long id) {
         courseService.deleteCourseLearningResourceCategory(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    //
+    // Тесты
+    //
+
+    @PostMapping("/test")
+    @PreAuthorize("hasPermission(#createTestModel, 'course.amdin.{courseId}')")
+    public ResponseEntity<?> createTest(@Valid @RequestBody CreateTestModel createTestModel) {
+        Long id = courseService.createTest(createTestModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @Autowired

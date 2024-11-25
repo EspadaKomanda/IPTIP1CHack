@@ -9,6 +9,7 @@ import ru.espada.ep.iptip.course.learning_resource_category.CourseLearningResour
 import ru.espada.ep.iptip.course.model.CreateCourseModel;
 import ru.espada.ep.iptip.course.model.CreateCourseLearningResourceCategoryModel;
 import ru.espada.ep.iptip.course.model.StudyGroupCourseModel;
+import ru.espada.ep.iptip.course.test.model.CreateTestModel;
 import ru.espada.ep.iptip.course.user_course.UserCourseEntity;
 import ru.espada.ep.iptip.course.user_course.UserCourseRepository;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
@@ -18,6 +19,7 @@ import ru.espada.ep.iptip.university.institute.major.faculty.FacultyEntity;
 import ru.espada.ep.iptip.user.UserEntity;
 import ru.espada.ep.iptip.user.UserRepository;
 import ru.espada.ep.iptip.user.UserService;
+import ru.espada.ep.iptip.user.permission.UserPermissionService;
 
 import java.security.Principal;
 import java.util.Comparator;
@@ -34,15 +36,19 @@ public class CourseService {
     private UserService userService;
     private StudyGroupService studyGroupService;
     private CourseLearningResourceCategoryRepository courseLearningResourceCategoryRepository;
+    private UserPermissionService userPermissionService;
 
-
-    public Long createCourse(CreateCourseModel createCourseModel) {
+    @Transactional
+    public Long createCourse(Principal principal, CreateCourseModel createCourseModel) {
         CourseEntity courseEntity = CourseEntity.builder()
                 .name(createCourseModel.getName())
                 .description(createCourseModel.getDescription())
                 .faculties(Set.of(FacultyEntity.builder().id(createCourseModel.getFacultyId()).build()))
                 .build();
         courseRepository.save(courseEntity);
+
+        userPermissionService.addPermission(principal.getName(), "course.amdin." + courseEntity.getId(), -1L, -1L);
+
         return courseEntity.getId();
     }
 
@@ -125,6 +131,10 @@ public class CourseService {
         courseLearningResourceCategoryRepository.deleteById(id);
     }
 
+    public Long createTest(CreateTestModel createTestModel) {
+        return 0L;
+    }
+
     @Autowired
     public void setCourseRepository(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
@@ -158,5 +168,10 @@ public class CourseService {
     @Autowired
     public void setStudyGroupService(StudyGroupService studyGroupService) {
         this.studyGroupService = studyGroupService;
+    }
+
+    @Autowired
+    public void setUserPermissionService(UserPermissionService userPermissionService) {
+        this.userPermissionService = userPermissionService;
     }
 }

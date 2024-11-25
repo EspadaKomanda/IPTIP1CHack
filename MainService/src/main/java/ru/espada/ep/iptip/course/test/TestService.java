@@ -2,8 +2,6 @@ package ru.espada.ep.iptip.course.test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.espada.ep.iptip.course.CourseEntity;
-import ru.espada.ep.iptip.course.test.model.CreateTestModel;
 import ru.espada.ep.iptip.course.test.question.QuestionEntity;
 import ru.espada.ep.iptip.course.test.question.QuestionRepository;
 import ru.espada.ep.iptip.course.test.question.QuestionType;
