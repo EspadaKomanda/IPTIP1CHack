@@ -12,6 +12,7 @@ import ru.espada.ep.iptip.course.model.StudyGroupCourseModel;
 import ru.espada.ep.iptip.course.test.model.CreateTestModel;
 import ru.espada.ep.iptip.course.user_course.UserCourseEntity;
 import ru.espada.ep.iptip.course.user_course.UserCourseRepository;
+import ru.espada.ep.iptip.exceptions.custom.ForbiddenException;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
 import ru.espada.ep.iptip.study_groups.StudyGroupRepository;
 import ru.espada.ep.iptip.study_groups.StudyGroupService;
@@ -100,7 +101,7 @@ public class CourseService {
 
     @Transactional
     public void attachStudyGroupToCourse(Principal principal, StudyGroupCourseModel attachStudyGroupToCourseModel) {
-        if (!studyGroupService.hasPermission(principal.getName(), attachStudyGroupToCourseModel.getCourseId())) throw new RuntimeException("Permission denied");
+        if (!studyGroupService.hasPermission(principal.getName(), attachStudyGroupToCourseModel.getCourseId())) throw new ForbiddenException("Permission denied");
 
         CourseEntity courseEntity = courseRepository.findById(attachStudyGroupToCourseModel.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found"));
         StudyGroupEntity studyGroupEntity = studyGroupRepository.findById(attachStudyGroupToCourseModel.getStudyGroupId()).orElseThrow(() -> new RuntimeException("StudyGroup not found"));
@@ -115,7 +116,7 @@ public class CourseService {
 
     @Transactional
     public void detachStudyGroupFromCourse(Principal principal, StudyGroupCourseModel detachUserFromCourseModel) {
-        if (!studyGroupService.hasPermission(principal.getName(), detachUserFromCourseModel.getCourseId())) throw new RuntimeException("Permission denied");
+        if (!studyGroupService.hasPermission(principal.getName(), detachUserFromCourseModel.getCourseId())) throw new ForbiddenException("Permission denied");
 
         CourseEntity courseEntity = courseRepository.findById(detachUserFromCourseModel.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found"));
         StudyGroupEntity studyGroupEntity = studyGroupRepository.findById(detachUserFromCourseModel.getStudyGroupId()).orElseThrow(() -> new RuntimeException("StudyGroup not found"));

@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.espada.ep.iptip.event.EventEntity;
 import ru.espada.ep.iptip.event.EventRepository;
+import ru.espada.ep.iptip.exceptions.custom.ForbiddenException;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
 import ru.espada.ep.iptip.study_groups.StudyGroupRepository;
+import ru.espada.ep.iptip.study_groups.StudyGroupService;
 import ru.espada.ep.iptip.study_groups.study_group_event.model.requests.AttachEventToStudyGroupRequest;
 import ru.espada.ep.iptip.study_groups.study_group_event.model.requests.DetachEventFromStudyGroupRequest;
 
@@ -19,10 +21,14 @@ public class StudyGroupEventServiceImpl implements StudyGroupEventService {
     private StudyGroupEventRepository studyGroupEventRepository;
     private EventRepository eventRepository;
     private StudyGroupRepository studyGroupRepository;
+    private StudyGroupService studyGroupService;
 
     // TODO: deal with the principal stuff here
     @Override
     public StudyGroupEventEntity attachEventToStudyGroup(Principal principal, AttachEventToStudyGroupRequest request) {
+        if (!studyGroupService.hasPermission(principal.getName(), request.getStudyGroupId())) {
+            throw new ForbiddenException("User does not have permission to attach event to study group");
+        }
 
         EventEntity event = eventRepository.findById(request.getEventId()).orElseThrow();
         StudyGroupEntity studyGroup = studyGroupRepository.findById(request.getStudyGroupId()).orElseThrow();
@@ -36,6 +42,9 @@ public class StudyGroupEventServiceImpl implements StudyGroupEventService {
     // TODO: deal with the principal stuff here as well
     @Override
     public void detachEventFromStudyGroup(Principal principal, DetachEventFromStudyGroupRequest request) {
+        if (!studyGroupService.hasPermission(principal.getName(), request.getStudyGroupId())) {
+            throw new ForbiddenException("User does not have permission to detach event from study group");
+        }
 
         EventEntity event = eventRepository.findById(request.getEventId()).orElseThrow();
         StudyGroupEntity studyGroup = studyGroupRepository.findById(request.getStudyGroupId()).orElseThrow();
@@ -59,5 +68,10 @@ public class StudyGroupEventServiceImpl implements StudyGroupEventService {
     @Autowired
     public void setStudyGroupRepository(StudyGroupRepository studyGroupRepository) {
         this.studyGroupRepository = studyGroupRepository;
+    }
+
+    @Autowired
+    public void setStudyGroupService(StudyGroupService studyGroupService) {
+        this.studyGroupService = studyGroupService;
     }
 }
