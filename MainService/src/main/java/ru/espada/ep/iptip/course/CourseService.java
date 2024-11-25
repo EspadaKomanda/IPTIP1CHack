@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.espada.ep.iptip.course.learning_resource_category.CourseLearningResourceCategoryEntity;
 import ru.espada.ep.iptip.course.learning_resource_category.model.CourseLearningResourceCategoryEntityDto;
 import ru.espada.ep.iptip.course.learning_resource_category.CourseLearningResourceCategoryRepository;
+import ru.espada.ep.iptip.course.model.CourseEntityDto;
 import ru.espada.ep.iptip.course.model.CreateCourseModel;
 import ru.espada.ep.iptip.course.model.CreateCourseLearningResourceCategoryModel;
 import ru.espada.ep.iptip.course.model.StudyGroupCourseModel;

@@ -1,7 +1,5 @@
 package ru.espada.ep.iptip.user;
 
-import jakarta.annotation.PostConstruct;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -9,30 +7,24 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.espada.ep.iptip.course.CourseEntity;
-import ru.espada.ep.iptip.course.CourseRepository;
+import ru.espada.ep.iptip.course.*;
+import ru.espada.ep.iptip.course.model.CourseEntityDto;
 import ru.espada.ep.iptip.course.user_course.UserCourseEntity;
 import ru.espada.ep.iptip.course.user_course.UserCourseRepository;
 import ru.espada.ep.iptip.s3.S3Service;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
 import ru.espada.ep.iptip.university.UniversityEntity;
-import ru.espada.ep.iptip.university.UniversityRepository;
 import ru.espada.ep.iptip.university.institute.InstituteEntity;
-import ru.espada.ep.iptip.university.institute.InstituteRepository;
 import ru.espada.ep.iptip.university.institute.major.MajorEntity;
-import ru.espada.ep.iptip.university.institute.major.MajorRepository;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyEntity;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyRepository;
-import ru.espada.ep.iptip.user.models.response.GetMyCoursesResponse;
 import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
-import ru.espada.ep.iptip.user.permission.UserPermissionEntity;
 import ru.espada.ep.iptip.user.profile.ProfileEntity;
 import ru.espada.ep.iptip.user.profile.ProfileRepository;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
@@ -42,10 +34,8 @@ import ru.espada.ep.iptip.user.permission.UserPermissionService;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -194,13 +184,19 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    public GetMyCoursesResponse getMyCourses(String username) {
+    public List<CourseEntityDto> getUserCourses(String username) {
         UserEntity user = getUser(username);
         List<UserCourseEntity> userCourses = userCourseRepository.findUserCourseEntitiesByUserIdAndSemester(user.getId(), user.getProfile().getSemester());
+        List<CourseEntity> courses = courseRepository.findAllById(userCourses.stream().map(UserCourseEntity::getCourseId).toList());
 
-        return GetMyCoursesResponse.builder()
-                .courses(userCourses.stream().map(UserCourseEntity::getCourseId).collect(Collectors.toList()))
-                .build();
+        return courses.stream().map(course ->
+                CourseEntityDto.builder()
+                        .id(course.getId())
+                        .name(course.getName())
+                        .description(course.getDescription())
+                        .createdAt(course.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public void addPermission(String username, AddRoleRequest addRoleRequest) {
@@ -243,6 +239,43 @@ public class UserService implements UserDetailsService {
                 .profileStudentIdCard(user.getProfile().getStudentIdCard())
                 .profileIcon(user.getProfile().getIcon())
                 .studyGroupNames(user.getStudyGroups().stream().map(StudyGroupEntity::getName).collect(Collectors.toSet()))
+                .build();
+    }
+
+    @Transactional
+    public CourseFullDto getCourseFullDto(Principal principal, Long id) {
+        CourseEntity course = courseRepository.findById(id).orElse(null);
+        if (course == null) {
+            throw new RuntimeException("exception.course.not_found");
+        }
+        UserEntity user = getUser(principal.getName());
+
+        if (!userCourseRepository.existsByUserIdAndCourseId(user.getId(), course.getId())) {
+            throw new RuntimeException("exception.user.not_in_course");
+        }
+
+        return CourseFullDto.builder()
+                .id(course.getId())
+                .name(course.getName())
+                .description(course.getDescription())
+                .createdAt(course.getCreatedAt())
+                .teachers(course.getTeachers().stream().map(teacher -> TeacherEntityDto.builder()
+                        .id(teacher.getId())
+                        .name(teacher.getProfile().getName())
+                        .surname(teacher.getProfile().getSurname())
+                        .patronymic(teacher.getProfile().getPatronymic())
+                        .icon(teacher.getProfile().getIcon())
+                        .build()).collect(Collectors.toSet()))
+                .tests(course.getTests().stream().map(test -> CourseTestEntityDto.builder()
+                        .id(test.getId())
+                        .name(test.getName())
+                        .time(test.getTime())
+                        .endTime(test.getEndTime())
+                        .hideAnswerCorrectness(test.isHideAnswerCorrectness())
+                        .hideAnswers(test.isHideAnswers())
+                        .hideResultScore(test.isHideResultScore())
+                        .build()
+                ).collect(Collectors.toSet()))
                 .build();
     }
 

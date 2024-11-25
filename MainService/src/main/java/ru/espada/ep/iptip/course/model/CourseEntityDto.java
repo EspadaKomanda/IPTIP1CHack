@@ -1,4 +1,4 @@
-package ru.espada.ep.iptip.course;
+package ru.espada.ep.iptip.course.model;
 
 import lombok.*;
 

@@ -5,12 +5,13 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
+import ru.espada.ep.iptip.course.CourseFullDto;
+import ru.espada.ep.iptip.course.model.CourseEntityDto;
 import ru.espada.ep.iptip.user.models.request.CreateProfileRequest;
-import ru.espada.ep.iptip.user.models.response.GetMyCoursesResponse;
 import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "JWT")
@@ -61,7 +62,12 @@ public class UserController {
     }
 
     @GetMapping("/courses")
-    public ResponseEntity<GetMyCoursesResponse> getMyCourses(Principal principal) {
-        return ResponseEntity.ok(userService.getMyCourses(principal.getName()));
+    public ResponseEntity<List<CourseEntityDto>> getUserCourses(Principal principal) {
+        return ResponseEntity.ok(userService.getUserCourses(principal.getName()));
+    }
+
+    @GetMapping("/course/{id}")
+    public ResponseEntity<CourseFullDto> getCourse(Principal principal, @PathVariable Long id) {
+        return ResponseEntity.ok(userService.getCourseFullDto(principal, id));
     }
 }
