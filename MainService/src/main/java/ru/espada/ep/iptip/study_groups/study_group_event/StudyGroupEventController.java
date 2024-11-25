@@ -19,12 +19,14 @@ public class StudyGroupEventController {
     private StudyGroupEventService studyGroupEventService;
 
     @PostMapping("/attachEventToStudyGroup")
+    // защищено!
     public ResponseEntity<?> attachEventToStudyGroup(Principal principal, @Valid @RequestBody AttachEventToStudyGroupRequest request) {
         StudyGroupEventEntity studyGroupEvent = studyGroupEventService.attachEventToStudyGroup(principal, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(studyGroupEvent);
     }
 
     // TODO: deal with the principal stuff in here as well
+    // защищено!
     @DeleteMapping("/detachEventFromStudyGroup")
     public ResponseEntity<?> detachEventFromStudyGroup(Principal principal, @Valid @RequestBody DetachEventFromStudyGroupRequest request) {
         studyGroupEventService.detachEventFromStudyGroup(principal, request);
