@@ -90,17 +90,18 @@ public class EventServiceImpl implements EventService{
     @Override
     public EventEntity getEvent(Principal principal, Long id) {
         // TODO: check permission
-        return null;
+        return eventRepository.findById(id).orElseThrow();
     }
 
     @Override
     public List<StudyGroupEntity> eventStudyGroups(Principal principal, Long id) {
         // TODO: check permission
-        return List.of();
+        return studyGroupRepository.findAllByEventId(id);
     }
 
     @Override
     public void deleteEvent(Principal principal, Long id) {
+        // TODO: check permission
         EventEntity eventEntity = eventRepository.findById(id).orElseThrow();
 
         // Remove study group events

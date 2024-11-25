@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.espada.ep.iptip.event.models.requests.CreateEventForStudyGroupsRequest;
 import ru.espada.ep.iptip.event.models.requests.CreateEventRequest;
 import ru.espada.ep.iptip.event.models.requests.ModifyEventRequest;
+import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "JWT")
@@ -36,11 +38,22 @@ public class EventController {
         return ResponseEntity.ok().body(eventEntity);
     }
 
-    // TODO: getter, setter
     @DeleteMapping("/event")
     public ResponseEntity<?> deleteEvent(Principal principal, Long id) {
         eventService.deleteEvent(principal, id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/event/{id}")
+    public ResponseEntity<?> getEvent(Principal principal, @PathVariable Long id) {
+        EventEntity eventEntity = eventService.getEvent(principal, id);
+        return ResponseEntity.ok().body(eventEntity);
+    }
+
+    @GetMapping("/event/{id}/studyGroups")
+    public ResponseEntity<?> eventStudyGroups(Principal principal, @PathVariable Long id) {
+        List<StudyGroupEntity> studyGroups = eventService.eventStudyGroups(principal, id);
+        return ResponseEntity.ok().body(studyGroups);
     }
 
     @Autowired
