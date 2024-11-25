@@ -19,7 +19,7 @@ namespace AnalyticService.Database
         public DbSet<Test> Tests { get; set; }
         public DbSet<UserTestAttempt> UserTestAttempts { get; set; }
         public DbSet<UserTestAttemptAnswer> UserTestAttemptAnswers { get; set; }
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync();
         EntityEntry Entry(object entity);
 
         Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

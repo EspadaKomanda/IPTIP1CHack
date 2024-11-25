@@ -32,6 +32,10 @@ namespace AnalyticService.Database
         {
             return await Database.BeginTransactionAsync(cancellationToken);
         }
+        public async Task<int> SaveChangesAsync()
+        {
+            return await base.SaveChangesAsync();
+        }
     }
    
 }

@@ -17,5 +17,13 @@ namespace AnalyticService.Database.Models
         public long QuestionId { get; set; }
         public string Content { get; set; } = "";
         public bool IsCorrect { get; set; }
+        public Status Status { get; set; }
+        public DateTime StatusModifiedAt { get; set; }
+    }
+    public enum Status 
+    {
+        ON_VERIFICATION,
+        CORRECT,
+        WRONG
     }
 }

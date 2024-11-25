@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/ereshkigal/hakathon/IPTIP/IPTIP1CHack/AnalyticService/AnalyticService/AnalyticService.csproj": {}
+    "/home/ereshkigal/hakathon/iptip/IPTIP1CHack/AnalyticService/AnalyticService/AnalyticService.csproj": {}
   },
   "projects": {
-    "/home/ereshkigal/hakathon/IPTIP/IPTIP1CHack/AnalyticService/AnalyticService/AnalyticService.csproj": {
+    "/home/ereshkigal/hakathon/iptip/IPTIP1CHack/AnalyticService/AnalyticService/AnalyticService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/ereshkigal/hakathon/IPTIP/IPTIP1CHack/AnalyticService/AnalyticService/AnalyticService.csproj",
+        "projectUniqueName": "/home/ereshkigal/hakathon/iptip/IPTIP1CHack/AnalyticService/AnalyticService/AnalyticService.csproj",
         "projectName": "AnalyticService",
-        "projectPath": "/home/ereshkigal/hakathon/IPTIP/IPTIP1CHack/AnalyticService/AnalyticService/AnalyticService.csproj",
+        "projectPath": "/home/ereshkigal/hakathon/iptip/IPTIP1CHack/AnalyticService/AnalyticService/AnalyticService.csproj",
         "packagesPath": "/home/ereshkigal/.nuget/packages/",
-        "outputPath": "/home/ereshkigal/hakathon/IPTIP/IPTIP1CHack/AnalyticService/AnalyticService/obj/",
+        "outputPath": "/home/ereshkigal/hakathon/iptip/IPTIP1CHack/AnalyticService/AnalyticService/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/ereshkigal/.nuget/NuGet/NuGet.Config"
@@ -45,6 +45,10 @@
             "Microsoft.EntityFrameworkCore.Proxies": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             }
           },
           "imports": [

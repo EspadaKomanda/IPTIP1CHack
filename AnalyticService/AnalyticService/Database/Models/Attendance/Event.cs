@@ -12,6 +12,7 @@ namespace AnalyticService.Database.Models.Attendance
         public long Id { get; set; }
         public long StudyGroupId { get; set; }
         public string Name { get; set; } = "";
+        public TimeSpan Duration { get; set; }
         public DateTime Date { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
         public bool IsWeekEven { get; set; }
