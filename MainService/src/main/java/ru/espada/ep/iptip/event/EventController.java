@@ -56,6 +56,8 @@ public class EventController {
         return ResponseEntity.ok().body(studyGroups);
     }
 
+    // TODO: implement getters of events for particular groups and particular time periods
+
     @Autowired
     public void setEventService(EventService eventService) {
         this.eventService = eventService;
