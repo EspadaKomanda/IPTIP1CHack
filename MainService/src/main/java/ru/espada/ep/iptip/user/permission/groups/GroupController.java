@@ -36,7 +36,7 @@ public class GroupController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasPermission(#id, 'group.{group}')")
+    @PreAuthorize("hasPermission(#id, 'group.{long}')")
     public ResponseEntity<GroupEntityDto> getGroup(@PathVariable Long id) {
         return ResponseEntity.ok(groupService.getGroup(id));
     }

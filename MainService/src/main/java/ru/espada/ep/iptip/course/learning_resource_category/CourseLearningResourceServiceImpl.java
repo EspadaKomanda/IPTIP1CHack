@@ -47,7 +47,7 @@ public class CourseLearningResourceServiceImpl implements CourseLearningResource
     public Long createResource(CreateCourseLearningResourceModel createCourseLearningResourceModel) {
         CourseLearningResourceFolderEntity courseLearningResourceFolderEntity = null;
         if (!(createCourseLearningResourceModel.getFolderId() == null)) {
-            courseLearningResourceFolderEntity = courseLearningResourceFolderRepository.findById(createCourseLearningResourceModel.getFolderId()).orElse(null);
+            courseLearningResourceFolderEntity = courseLearningResourceFolderRepository.findCourseLearningResourceFolderEntityById(createCourseLearningResourceModel.getFolderId()).orElse(null);
         }
 
         CourseLearningResourceEntity courseLearningResourceEntity = CourseLearningResourceEntity.builder()
@@ -69,6 +69,7 @@ public class CourseLearningResourceServiceImpl implements CourseLearningResource
     public Long createFolder(CreateCourseLEarningFolderModel createCourseLEarningFolderModel) {
         CourseLearningResourceFolderEntity courseLearningResourceFolderEntity = CourseLearningResourceFolderEntity.builder()
                 .name(createCourseLEarningFolderModel.getName())
+                .category(CourseLearningResourceCategoryEntity.builder().id(createCourseLEarningFolderModel.getCategoryId()).build())
                 .build();
         courseLearningResourceFolderRepository.save(courseLearningResourceFolderEntity);
         return courseLearningResourceFolderEntity.getId();
