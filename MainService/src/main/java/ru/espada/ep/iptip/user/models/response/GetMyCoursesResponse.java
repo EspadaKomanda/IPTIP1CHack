@@ -13,5 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class GetMyCoursesResponse {
-    private List<CourseEntity> courses;
+
+    private List<Long> courses;
+
 }

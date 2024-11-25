@@ -9,7 +9,7 @@ import java.security.Principal;
 import java.util.List;
 
 public interface GroupService {
-    List<GroupEntity> getGroups(String username);
+    List<GroupEntityDto> getGroups(String username);
 
     void createGroup(Principal principal, CreateGroupModel createGroupModel);
 
@@ -21,4 +21,6 @@ public interface GroupService {
     void deleteGroup(String group);
 
     void addGroupPermission(Principal principal, AddPermissionsToGroup addPermissionsToGroup);
+
+    GroupEntityDto getGroup(Long id);
 }

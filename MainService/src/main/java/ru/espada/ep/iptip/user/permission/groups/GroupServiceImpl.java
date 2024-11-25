@@ -38,8 +38,28 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<GroupEntity> getGroups(String username) {
-        return groupRepository.findAll().stream().filter(groupEntity -> userPermissionService.hasPermission(username, "group." + groupEntity.getName())).toList();
+    @Transactional
+    public List<GroupEntityDto> getGroups(String username) {
+        return groupRepository.findAll().stream()
+                .filter(groupEntity -> userPermissionService.hasPermission(username, "group." + groupEntity.getName()))
+                .map(groupEntity -> GroupEntityDto.builder()
+                        .id(groupEntity.getId())
+                        .name(groupEntity.getName())
+                        .color(groupEntity.getColor())
+                        .groupPermissions(groupEntity.getPermissionGroups().stream().map(PermissionGroupEntity::getPermission).toList())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public GroupEntityDto getGroup(Long id) {
+        GroupEntity groupEntity = groupRepository.findById(id).orElseThrow();
+        return GroupEntityDto.builder()
+                .id(groupEntity.getId())
+                .name(groupEntity.getName())
+                .color(groupEntity.getColor())
+                .groupPermissions(groupEntity.getPermissionGroups().stream().map(PermissionGroupEntity::getPermission).toList())
+                .build();
     }
 
     @Override
@@ -105,7 +125,7 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity groupEntity = groupRepository.findGroupEntityByName(groupToUserRequest.getGroup()).orElseThrow();
 
         for (String username : groupToUserRequest.getUsers()) {
-            userPermissionService.addPermissions(username, groupEntity.getPermission_groups().stream().map(PermissionGroupEntity::getPermission).toList(), -1L, -1L);
+            userPermissionService.addPermissions(username, groupEntity.getPermissionGroups().stream().map(PermissionGroupEntity::getPermission).toList(), -1L, -1L);
         }
     }
 
@@ -114,7 +134,7 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity groupEntity = groupRepository.findGroupEntityByName(groupToUserRequest.getGroup()).orElseThrow();
 
         for (String username : groupToUserRequest.getUsers()) {
-            userPermissionService.removePermissions(username, groupEntity.getPermission_groups().stream().map(PermissionGroupEntity::getPermission).toList());
+            userPermissionService.removePermissions(username, groupEntity.getPermissionGroups().stream().map(PermissionGroupEntity::getPermission).toList());
         }
     }
 

@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
 import ru.espada.ep.iptip.user.models.request.CreateProfileRequest;
+import ru.espada.ep.iptip.user.models.response.GetMyCoursesResponse;
+import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
 
 import java.security.Principal;
 
@@ -28,38 +30,38 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<?> getUser(Principal principal) {
-        return ResponseEntity.ok(userService.getUser(principal.getName()));
+    public ResponseEntity<UserDto> getUser(Principal principal) {
+        return ResponseEntity.ok(userService.getUserDto(principal.getName()));
     }
 
     @GetMapping("/user/id/{id}")
-    public ResponseEntity<?> getUser(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUser(id));
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserDto(id));
     }
 
     @GetMapping("/user/username/{username}")
-    public ResponseEntity<?> getUser(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUser(username));
+    public ResponseEntity<UserDto> getUser(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getUserDto(username));
     }
 
     @PostMapping("/avatar")
-    public ResponseEntity<?> uploadAvatar(Principal principal, @RequestBody byte[] avatar) {
+    public ResponseEntity<String> uploadAvatar(Principal principal, @RequestBody byte[] avatar) {
         String url = userService.uploadAvatar(principal.getName(), avatar).join();
         return ResponseEntity.ok(url);
     }
 
     @GetMapping("/avatar")
-    public ResponseEntity<?> getAvatarUrl(Principal principal) {
+    public ResponseEntity<String> getAvatarUrl(Principal principal) {
         return ResponseEntity.ok(userService.getAvatarUrl(principal.getName()));
     }
 
     @GetMapping("/instituteInfo/username/{username}")
-    public ResponseEntity<?> getInstituteInfo(@PathVariable String username) {
+    public ResponseEntity<InstituteInfoResponse> getInstituteInfo(@PathVariable String username) {
         return ResponseEntity.ok(userService.getInstituteInfo(username));
     }
 
     @GetMapping("/courses/username/{username}")
-    public ResponseEntity<?> getMyCourses(@PathVariable String username) {
+    public ResponseEntity<GetMyCoursesResponse> getMyCourses(@PathVariable String username) {
         return ResponseEntity.ok(userService.getMyCourses(username));
     }
 }

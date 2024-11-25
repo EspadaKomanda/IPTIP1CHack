@@ -26,6 +26,6 @@ public class GroupEntity {
 
     @OneToMany
     @JoinColumn(name = "group_id")
-    private List<PermissionGroupEntity> permission_groups;
+    private List<PermissionGroupEntity> permissionGroups;
 
 }

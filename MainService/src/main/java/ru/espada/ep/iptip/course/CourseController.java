@@ -12,6 +12,7 @@ import ru.espada.ep.iptip.course.model.*;
 import ru.espada.ep.iptip.course.test.model.CreateTestModel;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "JWT")
@@ -39,8 +40,8 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCourse(@PathVariable Long id) {
-        return ResponseEntity.ok(courseService.getCourse(id));
+    public ResponseEntity<CourseEntityDto> getCourse(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.getCourseDto(id));
     }
 
     //
@@ -68,7 +69,7 @@ public class CourseController {
     }
 
     @GetMapping("userCourses/{userId}")
-    public ResponseEntity<?> getUserCourses(@PathVariable Long userId) {
+    public ResponseEntity<List<Long>> getUserCourses(@PathVariable Long userId) {
         return ResponseEntity.ok(courseService.getUserCourses(userId));
     }
 
@@ -96,14 +97,14 @@ public class CourseController {
 
     @PostMapping("/resource/category")
     @PreAuthorize("hasPermission(#createCourseLearningResourceCategoryModel, 'course.amdin.{courseId}')")
-    public ResponseEntity<?> createCourseLearningResourceCategory(@Valid @RequestBody CreateCourseLearningResourceCategoryModel createCourseLearningResourceCategoryModel) {
+    public ResponseEntity<Long> createCourseLearningResourceCategory(@Valid @RequestBody CreateCourseLearningResourceCategoryModel createCourseLearningResourceCategoryModel) {
         Long id = courseService.createCourseLearningResourceCategory(createCourseLearningResourceCategoryModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @DeleteMapping("/resource/category/{id}")
     @PreAuthorize("hasPermission(#id, 'course.amdin.{id}')")
-    public ResponseEntity<?> deleteCourseLearningResourceCategory(@PathVariable Long id) {
+    public ResponseEntity<Long> deleteCourseLearningResourceCategory(@PathVariable Long id) {
         courseService.deleteCourseLearningResourceCategory(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -114,7 +115,7 @@ public class CourseController {
 
     @PostMapping("/test")
     @PreAuthorize("hasPermission(#createTestModel, 'course.amdin.{courseId}')")
-    public ResponseEntity<?> createTest(@Valid @RequestBody CreateTestModel createTestModel) {
+    public ResponseEntity<Long> createTest(@Valid @RequestBody CreateTestModel createTestModel) {
         Long id = courseService.createTest(createTestModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }

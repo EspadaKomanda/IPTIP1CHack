@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "JWT")
@@ -25,7 +26,7 @@ public class AdminUserController {
     }
 
     @GetMapping("/users/{page}")
-    public ResponseEntity<?> getUsers(@PathVariable int page) {
+    public ResponseEntity<List<UserDto>> getUsers(@PathVariable int page) {
         return ResponseEntity.ok(userService.allUsers(page));
     }
 

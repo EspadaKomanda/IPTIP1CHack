@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -74,9 +75,12 @@ public class UserService implements UserDetailsService {
     }
 
     @Cacheable(value = "users", key = "#page - 'users'", unless = "#result == null")
-    public List<UserEntity> allUsers(int page) {
+    @Transactional
+    public List<UserDto> allUsers(int page) {
         Pageable pageable = PageRequest.of(page, pageSize);
-        return userRepository.findAll(pageable).toList();
+
+        return userRepository.findAll(pageable).stream().
+                map(this::toUserDto).toList();
     }
 
     @CacheEvict(value = "users", key = "'users'")
@@ -103,6 +107,14 @@ public class UserService implements UserDetailsService {
 
     public UserEntity getUser(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    public UserDto getUserDto(Long id) {
+        return toUserDto(getUser(id));
+    }
+
+    public UserDto getUserDto(String username) {
+        return toUserDto(getUser(username));
     }
 
     @Transactional
@@ -182,14 +194,12 @@ public class UserService implements UserDetailsService {
                 .build();
     }
 
-    @Transactional
     public GetMyCoursesResponse getMyCourses(String username) {
         UserEntity user = getUser(username);
         List<UserCourseEntity> userCourses = userCourseRepository.findUserCourseEntitiesByUserIdAndSemester(user.getId(), user.getProfile().getSemester());
-        List<CourseEntity> courses = courseRepository.findAllById(userCourses.stream().map(UserCourseEntity::getCourseId).toList());
 
         return GetMyCoursesResponse.builder()
-                .courses(courses)
+                .courses(userCourses.stream().map(UserCourseEntity::getCourseId).collect(Collectors.toList()))
                 .build();
     }
 
@@ -204,6 +214,36 @@ public class UserService implements UserDetailsService {
         }
 
         userPermissionService.addPermission(addRoleRequest.getUsername(), permission, addRoleRequest.getStartTime(), addRoleRequest.getEndTime());
+    }
+
+    private UserDto toUserDto(UserEntity user) {
+        if (user.getProfile() == null) {
+            return UserDto.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .createdAt(user.getCreatedAt())
+                    .build();
+        }
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .createdAt(user.getCreatedAt())
+
+                .profileName(user.getProfile().getName())
+                .profileSurname(user.getProfile().getSurname())
+                .profilePatronymic(user.getProfile().getPatronymic())
+
+                .profilePhone(user.getProfile().getPhone())
+                .profilePhoneConfirmed(user.getProfile().isPhoneConfirmed())
+                .profileEmail(user.getProfile().getEmail())
+                .profileEmailConfirmed(user.getProfile().isEmailConfirmed())
+
+                .profileBirthDate(user.getProfile().getBirthDate())
+                .profileSemester(user.getProfile().getSemester())
+                .profileStudentIdCard(user.getProfile().getStudentIdCard())
+                .profileIcon(user.getProfile().getIcon())
+                .studyGroupNames(user.getStudyGroups().stream().map(StudyGroupEntity::getName).collect(Collectors.toSet()))
+                .build();
     }
 
     @Autowired

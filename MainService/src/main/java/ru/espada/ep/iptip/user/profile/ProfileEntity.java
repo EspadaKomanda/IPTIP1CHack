@@ -16,7 +16,7 @@ import java.util.Date;
 @Builder
 @Entity
 @Table(name = "customers")
-public class ProfileEntity  extends Auditable implements Serializable {
+public class ProfileEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

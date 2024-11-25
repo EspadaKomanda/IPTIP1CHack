@@ -60,6 +60,16 @@ public class CourseService {
         return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
     }
 
+    public CourseEntityDto getCourseDto(Long id) {
+        CourseEntity courseEntity = getCourse(id);
+        return CourseEntityDto.builder()
+                .id(courseEntity.getId())
+                .createdAt(courseEntity.getCreatedAt())
+                .name(courseEntity.getName())
+                .description(courseEntity.getDescription())
+                .build();
+    }
+
     @Transactional
     public UserCourseEntity attachUserToCourse(Long courseId, Long userId) {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -110,12 +120,8 @@ public class CourseService {
 
     }
 
-    public List<CourseEntity> getUserCourses(Long userId) {
-        return this.userCourseRepository.findUserCourseEntitiesByUserId(userId)
-                .stream()
-                .map(userCourseEntity -> courseRepository.findById(userCourseEntity.getCourseId()).orElseThrow(() -> new RuntimeException("Course not found")))
-                .sorted(Comparator.comparing(CourseEntity::getName))
-                .toList();
+    public List<Long> getUserCourses(Long userId) {
+        return this.userCourseRepository.findUserCourseEntitiesByUserId(userId).stream().map(UserCourseEntity::getCourseId).toList();
     }
 
     public Long createCourseLearningResourceCategory(CreateCourseLearningResourceCategoryModel createCourseLearningResourceCategoryModel) {

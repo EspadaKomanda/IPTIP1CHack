@@ -13,6 +13,7 @@ import ru.espada.ep.iptip.user.permission.groups.models.CreateGroupModel;
 import ru.espada.ep.iptip.user.permission.groups.models.GroupToUserRequest;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "JWT")
@@ -21,15 +22,23 @@ public class GroupController {
 
     private GroupService groupService;
 
-    @GetMapping("")
-    public ResponseEntity<?> getGroups(Principal principal) {
+    // защищено
+    @GetMapping("/groups")
+    public ResponseEntity<List<GroupEntityDto>> getGroups(Principal principal) {
         return ResponseEntity.ok(groupService.getGroups(principal.getName()));
     }
 
+    // защищено
     @PostMapping("")
     public ResponseEntity<?> createGroup(Principal principal, @Valid @RequestBody CreateGroupModel createGroupModel) {
         groupService.createGroup(principal, createGroupModel);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasPermission(#id, 'group.{group}')")
+    public ResponseEntity<GroupEntityDto> getGroup(@PathVariable Long id) {
+        return ResponseEntity.ok(groupService.getGroup(id));
     }
 
     @DeleteMapping("/{group}")
