@@ -23,7 +23,7 @@ public class CourseLearningResourceFolderEntity extends Auditable {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "course_learning_resource_category_id")
+    @JoinColumn(name = "course_learning_resource_category_id", nullable = false)
     private CourseLearningResourceCategoryEntity category;
 
 }

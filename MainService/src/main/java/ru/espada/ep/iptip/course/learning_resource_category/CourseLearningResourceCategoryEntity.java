@@ -22,7 +22,7 @@ public class CourseLearningResourceCategoryEntity extends Auditable {
 
     private String name;
     @ManyToOne
-    @JoinColumn(name = "course_id")
+    @JoinColumn(name = "course_id", nullable = false)
     private CourseEntity course;
 
 }

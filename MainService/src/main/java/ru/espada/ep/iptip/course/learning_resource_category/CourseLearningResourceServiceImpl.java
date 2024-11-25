@@ -45,11 +45,17 @@ public class CourseLearningResourceServiceImpl implements CourseLearningResource
     @Override
     @Transactional
     public Long createResource(CreateCourseLearningResourceModel createCourseLearningResourceModel) {
+        CourseLearningResourceFolderEntity courseLearningResourceFolderEntity = null;
+        if (!(createCourseLearningResourceModel.getFolderId() == null)) {
+            courseLearningResourceFolderEntity = courseLearningResourceFolderRepository.findById(createCourseLearningResourceModel.getFolderId()).orElse(null);
+        }
+
         CourseLearningResourceEntity courseLearningResourceEntity = CourseLearningResourceEntity.builder()
                 .name(createCourseLearningResourceModel.getName())
                 .type(createCourseLearningResourceModel.getType())
                 .content(createCourseLearningResourceModel.getContent())
-                .folder(CourseLearningResourceFolderEntity.builder().id(createCourseLearningResourceModel.getFolderId()).build())
+                .folder(courseLearningResourceFolderEntity)
+                .category(courseLearningResourceCategoryRepository.findById(createCourseLearningResourceModel.getCategoryId()).orElseThrow(() -> new UsernameNotFoundException("category not found")))
                 .build();
         return courseLearningResourceRepository.save(courseLearningResourceEntity).getId();
     }

@@ -15,6 +15,7 @@ public class CreateCourseLearningResourceModel {
     private String name;
     private String type;
     private String content;
+    private Long categoryId;
     private Long folderId;
 
 }
