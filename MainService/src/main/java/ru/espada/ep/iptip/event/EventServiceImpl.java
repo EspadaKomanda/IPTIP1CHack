@@ -28,7 +28,7 @@ public class EventServiceImpl implements EventService{
 
     @Override
     public EventEntity createEvent(Principal principal, CreateEventRequest request) {
-        //TODO: check permission
+        // TODO: check permission
 
         EventEntity eventEntity = EventEntity.builder()
                 .name(request.getName())
@@ -45,7 +45,7 @@ public class EventServiceImpl implements EventService{
     @Override
     @Transactional
     public EventEntity createEventForStudyGroups(Principal principal, CreateEventForStudyGroupsRequest request) {
-        //TODO: check permission
+        // TODO: check permission
 
         EventEntity eventEntity = EventEntity.builder()
                 .name(request.getName())
@@ -72,7 +72,7 @@ public class EventServiceImpl implements EventService{
 
     @Override
     public EventEntity modifyEvent(Principal principal, ModifyEventRequest request) {
-        //TODO: check permission
+        // TODO: check permission
         EventEntity eventEntity = eventRepository.findById(request.getId()).orElseThrow();
 
         eventEntity.setName(Optional.ofNullable(request.getName()).orElse(eventEntity.getName()));
@@ -89,20 +89,27 @@ public class EventServiceImpl implements EventService{
 
     @Override
     public EventEntity getEvent(Principal principal, Long id) {
-        //TODO: check permission
+        // TODO: check permission
         return null;
     }
 
     @Override
     public List<StudyGroupEntity> eventStudyGroups(Principal principal, Long id) {
-        //TODO: check permission
+        // TODO: check permission
         return List.of();
     }
 
     @Override
     public void deleteEvent(Principal principal, Long id) {
-        //TODO: check permission
+        EventEntity eventEntity = eventRepository.findById(id).orElseThrow();
 
+        // Remove study group events
+        List<StudyGroupEventEntity> studyGroupEventEntities = studyGroupEventRepository.findAllByEventId(eventEntity.getId());
+        if (!studyGroupEventEntities.isEmpty()) {
+            studyGroupEventRepository.deleteAll(studyGroupEventEntities);
+        }
+
+        eventRepository.delete(eventEntity);
     }
 
     @Autowired

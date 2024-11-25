@@ -30,13 +30,18 @@ public class EventController {
         return ResponseEntity.ok().body(eventEntity);
     }
 
-    @PatchMapping("event/")
+    @PatchMapping("/event")
     public ResponseEntity<?> modifyEvent(Principal principal, @Valid @RequestBody ModifyEventRequest request) {
         EventEntity eventEntity = eventService.modifyEvent(principal, request);
         return ResponseEntity.ok().body(eventEntity);
     }
 
-    // TODO: getter, setter, remover
+    // TODO: getter, setter
+    @DeleteMapping("/event")
+    public ResponseEntity<?> deleteEvent(Principal principal, Long id) {
+        eventService.deleteEvent(principal, id);
+        return ResponseEntity.ok().build();
+    }
 
     @Autowired
     public void setEventService(EventService eventService) {
