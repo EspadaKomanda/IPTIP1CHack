@@ -1,10 +1,10 @@
 package ru.espada.ep.iptip.course;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.espada.ep.iptip.course.learning_resource_category.CourseLearningResourceCategoryEntity;
+import ru.espada.ep.iptip.course.learning_resource_category.model.CourseLearningResourceCategoryEntityDto;
 import ru.espada.ep.iptip.course.learning_resource_category.CourseLearningResourceCategoryRepository;
 import ru.espada.ep.iptip.course.model.CreateCourseModel;
 import ru.espada.ep.iptip.course.model.CreateCourseLearningResourceCategoryModel;
@@ -22,7 +22,6 @@ import ru.espada.ep.iptip.user.UserService;
 import ru.espada.ep.iptip.user.permission.UserPermissionService;
 
 import java.security.Principal;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -68,6 +67,15 @@ public class CourseService {
                 .name(courseEntity.getName())
                 .description(courseEntity.getDescription())
                 .build();
+    }
+
+    public List<CourseLearningResourceCategoryEntityDto> getCourseLearningResourceCategories(Long id) {
+        return courseLearningResourceCategoryRepository.findCourseLearningResourceCategoryEntitiesByCourse(CourseEntity.builder().id(id).build()).stream().map(
+                courseLearningResourceCategoryEntity -> CourseLearningResourceCategoryEntityDto.builder()
+                        .id(courseLearningResourceCategoryEntity.getId())
+                        .name(courseLearningResourceCategoryEntity.getName())
+                        .build()
+        ).toList();
     }
 
     @Transactional

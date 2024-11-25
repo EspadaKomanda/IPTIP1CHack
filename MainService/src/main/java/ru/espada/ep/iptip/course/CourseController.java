@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import ru.espada.ep.iptip.course.learning_resource_category.model.CourseLearningResourceCategoryEntityDto;
 import ru.espada.ep.iptip.course.model.CreateCourseLearningResourceCategoryModel;
 import ru.espada.ep.iptip.course.model.*;
 import ru.espada.ep.iptip.course.test.model.CreateTestModel;
@@ -100,6 +101,12 @@ public class CourseController {
     public ResponseEntity<Long> createCourseLearningResourceCategory(@Valid @RequestBody CreateCourseLearningResourceCategoryModel createCourseLearningResourceCategoryModel) {
         Long id = courseService.createCourseLearningResourceCategory(createCourseLearningResourceCategoryModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(id);
+    }
+
+    @GetMapping("/resource/categories")
+    @PreAuthorize("hasPermission(#id, 'course.amdin.{id}')")
+    public ResponseEntity<List<CourseLearningResourceCategoryEntityDto>> getCourseLearningResourceCategory(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.getCourseLearningResourceCategories(id));
     }
 
     @DeleteMapping("/resource/category/{id}")
