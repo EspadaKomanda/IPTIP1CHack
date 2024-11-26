@@ -122,6 +122,8 @@ public class UserService implements UserDetailsService {
         profile.setSurname(createProfileRequest.getSurname());
         profile.setPhone(createProfileRequest.getPhone());
         profile.setEmail(createProfileRequest.getEmail());
+        profile.setSemester(createProfileRequest.getSemester());
+        profile.setStudentIdCard(createProfileRequest.getStudentIdCard());
         if (createProfileRequest.getPatronymic() != null) {
             profile.setPatronymic(createProfileRequest.getPatronymic());
         }

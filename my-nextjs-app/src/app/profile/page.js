@@ -15,7 +15,6 @@ export default function Profile() {
     const fileInputRef = useRef(null);
     const [userData, setUserData] = useState(null);
 
-
     const handleAvatarChange = (file) => {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -37,6 +36,7 @@ export default function Profile() {
             console.log(data)
         })
     }
+
     function fetchInstitute(username) {
         const url = apiConfig.getUserInstituteInfoUsernameUsername.replace('{username}', username);
         
