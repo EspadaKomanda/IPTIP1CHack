@@ -1,9 +1,11 @@
 package ru.espada.ep.iptip.user.auth;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,10 +28,10 @@ import java.security.Principal;
 @RequestMapping("/auth")
 public class UserAuthController {
 
-    private UserService userService;
-    private AuthenticationManager authenticationManager;
-    private JwtCore jwtCore;
-    private LocalizationService localizationService;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtCore jwtCore;
+    private final LocalizationService localizationService;
     @Value("${auth.register.enabled}")
     private boolean registerEnabled;
 
@@ -69,17 +71,13 @@ public class UserAuthController {
     }
 
     @PostMapping("/aregister")
-    public ResponseEntity<?> register(Principal principal, @Valid @RequestBody AuthRequest authRequest) {
+    @PreAuthorize("hasPermission(#authRequest, 'users.admin')")
+    @SecurityRequirement(name = "JWT")
+    public ResponseEntity<?> aregister(@Valid @RequestBody AuthRequest authRequest) {
         userService.saveUser(UserEntity.builder()
                         .username(authRequest.getLogin())
                         .password(authRequest.getPassword())
                         .build());
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PostMapping("/delete")
-    public ResponseEntity<?> delete(Principal principal, @Valid @RequestBody String username) {
-        userService.deleteUser(username);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
