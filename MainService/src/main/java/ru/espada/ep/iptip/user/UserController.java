@@ -4,13 +4,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
-import ru.espada.ep.iptip.user.models.request.AttachUserToCourseRequest;
-import ru.espada.ep.iptip.user.models.request.CreateCustomerRequest;
+import ru.espada.ep.iptip.course.CourseFullDto;
+import ru.espada.ep.iptip.course.model.CourseEntityDto;
+import ru.espada.ep.iptip.user.models.request.CreateProfileRequest;
+import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "JWT")
@@ -23,79 +24,50 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/add-role")
-    public ResponseEntity<?> addRole(@RequestBody AddRoleRequest addRoleRequest) {
-        userService.addRole(addRoleRequest);
+    @PostMapping("/profile")
+    public ResponseEntity<?> createProfile(Principal principal, @Valid @RequestBody CreateProfileRequest createProfileRequest) {
+        userService.createProfile(principal, createProfileRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/create-customer")
-    public ResponseEntity<?> createCustomer(Principal principal, @Valid @RequestBody CreateCustomerRequest createCustomerRequest) {
-        userService.createCustomer(principal, createCustomerRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @GetMapping("/user")
+    public ResponseEntity<UserDto> getUser(Principal principal) {
+        return ResponseEntity.ok(userService.getUserDto(principal.getName()));
     }
 
-    @GetMapping("/get-customer-courses")
-    public ResponseEntity<?> getCustomerCourses(Principal principal) {
-        return ResponseEntity.ok(userService.getCustomerCourses(principal.getName()));
+    @GetMapping("/user/id/{id}")
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserDto(id));
     }
 
-    @GetMapping("/get-responsible-courses")
-    public ResponseEntity<?> getResponsibleCourses(Principal principal) {
-        return ResponseEntity.ok(userService.getResponsibleCourses(principal));
+    @GetMapping("/user/username/{username}")
+    public ResponseEntity<UserDto> getUser(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getUserDto(username));
     }
 
-    @GetMapping("/get-customer")
-    public ResponseEntity<?> getCustomer(Principal principal) {
-        return ResponseEntity.ok(userService.getCustomer(principal.getName()));
-    }
-
-    @GetMapping("/get-customer/{id}")
-    public ResponseEntity<?> getCustomer(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getCustomer(id));
-    }
-
-    @GetMapping("/get-customer/{username}")
-    public ResponseEntity<?> getCustomer(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getCustomer(username));
-    }
-
-    @GetMapping("/get-user")
-    public ResponseEntity<?> getUser(Principal principal) {
-        return ResponseEntity.ok(userService.getUser(principal.getName()));
-    }
-
-    @GetMapping("/get-user/{id}")
-    public ResponseEntity<?> getUser(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUser(id));
-    }
-
-    @GetMapping("/get-user/{username}")
-    public ResponseEntity<?> getUser(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUser(username));
-    }
-
-    @GetMapping("/get-users/{page}")
-    public ResponseEntity<?> getUsers(@PathVariable int page) {
-        return ResponseEntity.ok(userService.allUsers(page));
-    }
-
-    @PostMapping("/upload-avatar")
-    public ResponseEntity<?> uploadAvatar(Principal principal, @RequestBody byte[] avatar) {
+    @PostMapping("/avatar")
+    public ResponseEntity<String> uploadAvatar(Principal principal, @RequestBody byte[] avatar) {
         String url = userService.uploadAvatar(principal.getName(), avatar).join();
         return ResponseEntity.ok(url);
     }
 
-    @GetMapping("/get-avatar-url")
-    public ResponseEntity<?> getAvatarUrl(Principal principal) {
+    @GetMapping("/avatar")
+    public ResponseEntity<String> getAvatarUrl(Principal principal) {
         return ResponseEntity.ok(userService.getAvatarUrl(principal.getName()));
     }
 
-    @PutMapping("/attach-customer-to-course")
-    @PreAuthorize("hasPermission(#attachUserToCourseRequest, 'course.{courseId}')")
-    public ResponseEntity<?> attachUserToCourse(@Valid @RequestBody AttachUserToCourseRequest attachUserToCourseRequest) {
-        userService.attachCourseToCustomer(attachUserToCourseRequest.getUsername(), attachUserToCourseRequest.getCourseId(), attachUserToCourseRequest.getStartTime(), attachUserToCourseRequest.getEndTime());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @GetMapping("/instituteInfo/username/{username}")
+    public ResponseEntity<InstituteInfoResponse> getInstituteInfo(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getInstituteInfo(username));
     }
 
+    @GetMapping("/courses")
+    public ResponseEntity<List<CourseEntityDto>> getUserCourses(Principal principal) {
+        return ResponseEntity.ok(userService.getUserCourses(principal.getName()));
+    }
+
+    @GetMapping("/course/{id}")
+    public ResponseEntity<CourseFullDto> getCourse(Principal principal, @PathVariable Long id) {
+        return ResponseEntity.ok(userService.getCourseFullDto(principal, id));
+    }
 }
