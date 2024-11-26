@@ -14,7 +14,7 @@ public interface StudyGroupService {
     StudyGroupEntity getStudyGroup(Principal principal, Long studyGroupId);
     void deleteStudyGroup(Principal principal, Long studyGroupId);
 
-    void attachUserToStudyGroup(Principal principal, AttachUserToStudyGroupRequest request);
+    void attachUserToStudyGroup(Principal principal, AttachUsersToStudyGroupRequest request);
     void detachUserFromStudyGroup(Principal principal, DetachUserFromStudyGroupRequest request);
     void setStudyGroupMembersSemester(Principal principal, SetStudyGroupMembersSemesterRequest request);
     List<Long> getStudyGroupMembers(Principal principal, Long studyGroupId);

@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateStudyGroupWithUsersRequest {
+public class    CreateStudyGroupWithUsersRequest {
     private Long id;
     private String name;
     private Long facultyId;
