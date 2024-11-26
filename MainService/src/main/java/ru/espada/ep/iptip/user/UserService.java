@@ -247,7 +247,6 @@ public class UserService implements UserDetailsService {
             userDto.setProfilePhone(user.getProfile().getPhone());
             userDto.setProfileEmail(user.getProfile().getEmail());
             userDto.setProfileBirthDate(user.getProfile().getBirthDate());
-            userDto.setProfileSemester(user.getProfile().getSemester());
             userDto.setProfileStudentIdCard(user.getProfile().getStudentIdCard());
             userDto.setProfileIcon(user.getProfile().getIcon());
             userDto.setProfileEmailConfirmed(user.getProfile().isEmailConfirmed());
@@ -350,6 +349,7 @@ public class UserService implements UserDetailsService {
         this.userStudyGroupRepository = userStudyGroupRepository;
     }
 
+    @Autowired
     public void setS3Service(S3Service s3Service) {
         this.s3Service = s3Service;
     }

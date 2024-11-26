@@ -126,8 +126,8 @@ export default function Profile() {
                             <p>Код программы: {instituteInfo ? instituteInfo.majorCode : "Неизвестно"} <span className="text-customColor4"></span></p>
                             <p>Институт: {instituteInfo ? instituteInfo.instituteName : "Неизвестно"} <span className="text-customColor4"></span></p>
                             <p>Профиль: {instituteInfo ? instituteInfo.facultyName : "Неизвестно"} <span className="text-customColor4"></span></p>
-                            <p>Курс: <span className="text-customColor4"></span></p> 
-                            <p>Группа: <span className="text-customColor4"></span></p> 
+                            <p>Курс: {instituteInfo ? userData.profileSemester : "Неизвестно"} <span className="text-customColor4"></span></p>
+                            <p>Группа: {instituteInfo ? userData.studyGroup : "Неизвестно"} <span className="text-customColor4"></span></p>
                         </div>
                     </div>
                     <div>
