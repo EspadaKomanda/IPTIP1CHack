@@ -99,13 +99,14 @@ export default function Profile() {
                 <div className="container grid lg:grid-cols-2 grid-rows-[auto_1fr_auto] gap-9 font-semibold p-4">
                     <div className="">
                         <p className="text-right text-sm pr-4 font-medium text-customColor4">личная информация</p>
-                        <div className="bg-customColor1 rounded-2xl p-9 sm:flex ">
+                        <div className="bg-customColor1 rounded-2xl gap-x-9 p-9 sm:flex ">
                             {avatar ? (
                                 <Image
                                 src={avatar}
                                 alt="User Image"
                                 width={130}
-                                height={130}
+                                height={0}
+                                className="w-auto h-32 max-w-full rounded-full"
                                 />
                             ) : (
                                 <div className="bg-customColor3 flex items-center justify-center w-32 h-32 rounded-full">
