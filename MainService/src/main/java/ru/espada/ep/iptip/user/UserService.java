@@ -19,12 +19,17 @@ import ru.espada.ep.iptip.course.user_course.UserCourseEntity;
 import ru.espada.ep.iptip.course.user_course.UserCourseRepository;
 import ru.espada.ep.iptip.s3.S3Service;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
+import ru.espada.ep.iptip.study_groups.StudyGroupRepository;
+import ru.espada.ep.iptip.study_groups.user.UserStudyGroupEntity;
+import ru.espada.ep.iptip.study_groups.user.UserStudyGroupEntityRepository;
 import ru.espada.ep.iptip.university.UniversityEntity;
 import ru.espada.ep.iptip.university.institute.InstituteEntity;
 import ru.espada.ep.iptip.university.institute.major.MajorEntity;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyEntity;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyRepository;
 import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
+import ru.espada.ep.iptip.user.models.response.UserDto;
+import ru.espada.ep.iptip.user.models.response.UserInstituteDto;
 import ru.espada.ep.iptip.user.profile.ProfileEntity;
 import ru.espada.ep.iptip.user.profile.ProfileRepository;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
@@ -36,7 +41,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +56,8 @@ public class UserService implements UserDetailsService {
     @Value("${users.page-size}")
     private int pageSize;
     private S3Service s3Service;
+    private UserStudyGroupEntityRepository userStudyGroupRepository;
+    private StudyGroupRepository studyGroupRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -141,16 +147,21 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public CompletableFuture<String> uploadAvatar(String name, byte[] avatar) {
+    @Transactional
+    public String uploadAvatar(String name, byte[] avatar) {
         UserEntity user = userRepository.findByUsername(name).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return s3Service.uploadPng(avatar, "user-" + user.getId(), "user-avatar")
+        String profileUrl = s3Service.uploadPng(avatar, "user-" + user.getId(), "user-avatar")
                 .thenCompose(fileName -> {
                     if (fileName == null) {
                         throw new IllegalArgumentException("exception.user.avatar_upload_failed");
                     } else {
                         return s3Service.getFileUrl("user-avatar", fileName);
                     }
-                }).thenApply(url -> url);
+                }).thenApply(url -> url).join();
+        user.getProfile().setIcon(profileUrl);
+        userRepository.save(user);
+
+        return profileUrl;
     }
 
     public String getAvatarUrl(String name) {
@@ -314,5 +325,29 @@ public class UserService implements UserDetailsService {
     @Autowired
     public void setUserPermissionService(UserPermissionService userPermissionService) {
         this.userPermissionService = userPermissionService;
+    }
+
+    @Transactional
+    public UserInstituteDto getUserInstituteDto(String name) {
+        UserEntity user = userRepository.findByUsername(name).orElseThrow(() -> new RuntimeException("exception.user.not_found"));
+        UserStudyGroupEntity userStudyGroup = userStudyGroupRepository.findUserStudyGroupEntitiesByUserId(user.getId()).stream().filter(UserStudyGroupEntity::isMain).findFirst().orElseThrow(() -> new RuntimeException("exception.user.not_found"));
+        StudyGroupEntity studyGroup = studyGroupRepository.findById(userStudyGroup.getStudyGroupId()).orElseThrow(() -> new RuntimeException("exception.study_group.not_found"));
+
+        return UserInstituteDto.builder()
+                .universityName(studyGroup.getFaculty().getMajor().getInstitute().getUniversity().getName())
+                .instituteName(studyGroup.getFaculty().getMajor().getInstitute().getName())
+                .majorName(studyGroup.getFaculty().getMajor().getName())
+                .facultyName(studyGroup.getFaculty().getName())
+                .build();
+    }
+
+    @Autowired
+    public void setUserStudyGroupRepository(UserStudyGroupEntityRepository userStudyGroupRepository) {
+        this.userStudyGroupRepository = userStudyGroupRepository;
+    }
+
+    @Autowired
+    public void setStudyGroupRepository(StudyGroupRepository studyGroupRepository) {
+        this.studyGroupRepository = studyGroupRepository;
     }
 }

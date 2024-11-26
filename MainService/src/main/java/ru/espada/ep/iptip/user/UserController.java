@@ -9,6 +9,8 @@ import ru.espada.ep.iptip.course.CourseFullDto;
 import ru.espada.ep.iptip.course.model.CourseEntityDto;
 import ru.espada.ep.iptip.user.models.request.CreateProfileRequest;
 import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
+import ru.espada.ep.iptip.user.models.response.UserDto;
+import ru.espada.ep.iptip.user.models.response.UserInstituteDto;
 
 import java.security.Principal;
 import java.util.List;
@@ -35,6 +37,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserDto(principal.getName()));
     }
 
+    @GetMapping("/user/full")
+    public ResponseEntity<UserInstituteDto> getUserFull(Principal principal) {
+        return ResponseEntity.ok(userService.getUserInstituteDto(principal.getName()));
+    }
+
     @GetMapping("/user/id/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserDto(id));
@@ -47,7 +54,7 @@ public class UserController {
 
     @PostMapping("/avatar")
     public ResponseEntity<String> uploadAvatar(Principal principal, @RequestBody byte[] avatar) {
-        String url = userService.uploadAvatar(principal.getName(), avatar).join();
+        String url = userService.uploadAvatar(principal.getName(), avatar);
         return ResponseEntity.ok(url);
     }
 

@@ -33,10 +33,12 @@ export default function Profile() {
         }).then(async (res) => {
             const data = await res.json()
             setUserData(data)
+            setAvatar(data.profileIcon)
             console.log(data)
         })
     }
 
+    /*
     function fetchInstitute(username) {
         const url = apiConfig.getUserInstituteInfoUsernameUsername.replace('{username}', username);
         
@@ -57,11 +59,13 @@ export default function Profile() {
             console.error('There was a problem with the fetch operation:', error);
         });
     }
+
+     */
     
     
     useEffect(() => {
         fetchProfile();
-        fetchInstitute("admin");
+        //fetchInstitute("admin");
     }, []);
 
     if (!userData) {

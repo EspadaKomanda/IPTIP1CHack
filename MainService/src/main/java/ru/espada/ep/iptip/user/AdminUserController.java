@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
+import ru.espada.ep.iptip.user.models.response.UserDto;
 
 import java.security.Principal;
 import java.util.List;

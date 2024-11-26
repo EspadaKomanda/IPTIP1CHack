@@ -1,6 +1,5 @@
-package ru.espada.ep.iptip.user;
+package ru.espada.ep.iptip.user.models.response;
 
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.Date;
