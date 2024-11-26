@@ -1,0 +1,2 @@
+obj/Debug/net8.0/Proto/Analytic.cs \
+obj/Debug/net8.0/Proto/AnalyticGrpc.cs: Proto/analytic.proto

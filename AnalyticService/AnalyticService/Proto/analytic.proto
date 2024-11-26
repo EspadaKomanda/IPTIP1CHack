@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option csharp_namespace = "AnalyticGrpc";
+
+package analytic;
+
+message Request
+{
+    string content = 1;
+}
+
+message Response
+{
+    string content = 1;
+}
+
+service Analytic
+{
+    //Attendance
+    rpc GetAttendanceTimePercent (Request) returns (Response);
+    rpc GetAttendancePercentSubject (Request) returns (Response);
+    rpc GetAttendancePercentWeekday (Request) returns (Response);
+    //Questions
+    rpc GetQuestionsCompletionPercent (Request) returns (Response);
+    rpc GetQuestionMostPopularAnswer (Request) returns (Response);
+    //Tests
+    rpc GetTestCompletionProgressPercent (Request) returns (Response);
+    rpc GetTestAverageCompletionTime (Request) returns (Response);
+    rpc GetTestExpiredPercent (Request) returns (Response);
+    rpc GetTestAverageResult (Request) returns (Response);
+    rpc GetTestAverageTries (Request) returns (Response);
+    rpc GetTestSuccessAttemptsPercent (Request) returns (Response);
+}
