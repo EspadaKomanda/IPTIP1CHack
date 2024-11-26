@@ -5,6 +5,7 @@ export default {
     getUserAvatar : host + '/user/avatar',
     postUserAvatar : host + '/user/avatar',
     getUserUser : host + '/user/user',
+    getUserInstitutes : host + '/user/user/institutes',
     getUserUserUsernameUsername : host + '/user/user/username/{username}',
     getUserUserIdId : host + '/user/user/id/{id}',
     getUserInstituteInfoUsernameUsername : host + '/user/instituteInfo/username/{username}',

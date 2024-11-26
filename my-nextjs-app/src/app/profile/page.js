@@ -38,10 +38,8 @@ export default function Profile() {
         })
     }
 
-    /*
-    function fetchInstitute(username) {
-        const url = apiConfig.getUserInstituteInfoUsernameUsername.replace('{username}', username);
-        
+    function fetchInstitute() {
+        const url = apiConfig.getUserInstitutes;
         fetch(url, {
             method: "GET",
             headers: {
@@ -59,13 +57,10 @@ export default function Profile() {
             console.error('There was a problem with the fetch operation:', error);
         });
     }
-
-     */
-    
     
     useEffect(() => {
         fetchProfile();
-        //fetchInstitute("admin");
+        fetchInstitute();
     }, []);
 
     if (!userData) {
@@ -126,7 +121,7 @@ export default function Profile() {
                     <div className="row-span-2">
                         <p className="text-right text-sm pr-4 font-medium text-customColor4">роль в институте</p>
                         <div className=" bg-customColor1 rounded-2xl p-9 pb-16 gap-y-9 flex flex-col">  
-                            <p>Направление: {} <span className="text-customColor4"></span></p>
+                            <p>Направление: {instituteInfo ? instituteInfo.universityName : "Неизвестно"} <span className="text-customColor4"></span></p>
                             <p>Код программы: <span className="text-customColor4"></span></p> 
                             <p>Институт: <span className="text-customColor4"></span></p> 
                             <p>Профиль: <span className="text-customColor4"></span></p> 

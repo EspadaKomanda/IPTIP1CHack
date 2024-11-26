@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserDto(principal.getName()));
     }
 
-    @GetMapping("/user/full")
+    @GetMapping("/user/institutes")
     public ResponseEntity<UserInstituteDto> getUserFull(Principal principal) {
         return ResponseEntity.ok(userService.getUserInstituteDto(principal.getName()));
     }
