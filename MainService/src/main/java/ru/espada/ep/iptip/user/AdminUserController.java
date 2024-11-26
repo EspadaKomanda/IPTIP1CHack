@@ -29,7 +29,8 @@ public class AdminUserController {
 
     @GetMapping("/users/{page}")
     public ResponseEntity<List<UserDto>> getUsers(@PathVariable int page) {
-        return ResponseEntity.ok(userService.allUsers(page));
+        List<UserDto> users = userService.allUsers(page);
+        return ResponseEntity.ok().body(users);
     }
 
     @DeleteMapping("")

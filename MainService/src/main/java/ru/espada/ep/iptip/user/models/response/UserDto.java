@@ -2,6 +2,7 @@ package ru.espada.ep.iptip.user.models.response;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
@@ -10,7 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDto {
+public class UserDto implements Serializable {
 
     private Long id;
     private Date createdAt;

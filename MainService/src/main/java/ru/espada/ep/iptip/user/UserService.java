@@ -79,7 +79,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    @Cacheable(value = "users", key = "#page - 'users'", unless = "#result == null")
+    @Cacheable(value = "users", key = "#page + '-users'", unless = "#result == null")
     @Transactional
     public List<UserDto> allUsers(int page) {
         Pageable pageable = PageRequest.of(page, pageSize);
