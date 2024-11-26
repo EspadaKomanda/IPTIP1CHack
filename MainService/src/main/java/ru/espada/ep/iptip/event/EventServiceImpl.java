@@ -21,7 +21,6 @@ import java.util.Optional;
 @Service
 public class EventServiceImpl implements EventService{
     private EventRepository eventRepository;
-    private StudyGroupEventEntity studyGroupEventEntity;
     private StudyGroupRepository studyGroupRepository;
 
     private final StudyGroupEventRepository studyGroupEventRepository;
@@ -121,10 +120,5 @@ public class EventServiceImpl implements EventService{
     @Autowired
     public void setStudyGroupRepository(StudyGroupRepository studyGroupRepository) {
         this.studyGroupRepository = studyGroupRepository;
-    }
-
-    @Autowired
-    public void setStudyGroupEventEntity(StudyGroupEventEntity studyGroupEventEntity) {
-        this.studyGroupEventEntity = studyGroupEventEntity;
     }
 }
