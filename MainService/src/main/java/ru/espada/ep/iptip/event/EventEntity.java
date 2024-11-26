@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.espada.ep.iptip.audit.Auditable;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
+import ru.espada.ep.iptip.user.UserEntity;
 import ru.espada.ep.iptip.user.permission.annotation.FieldPermission;
 import ru.espada.ep.iptip.user.permission.annotation.Permission;
 
@@ -33,7 +34,7 @@ public class EventEntity extends Auditable {
     @FieldPermission
     private int weekday;
     @FieldPermission
-    private boolean is_week_event;
+    private Boolean is_week_even;
     @FieldPermission
     private Long begin_date;
     @FieldPermission
@@ -41,6 +42,13 @@ public class EventEntity extends Auditable {
     @Column(nullable = false)
     @FieldPermission
     private Long duration;
+    @Column(length = 128)
+    private String type;
+    @OneToOne
+    @JoinColumn(name = "teacher_id")
+    private UserEntity teacher;
+    @Column(columnDefinition = "TEXT")
+    private String location;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "study_group_event",

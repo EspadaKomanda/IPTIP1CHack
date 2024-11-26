@@ -17,9 +17,13 @@ import ru.espada.ep.iptip.course.*;
 import ru.espada.ep.iptip.course.model.CourseEntityDto;
 import ru.espada.ep.iptip.course.user_course.UserCourseEntity;
 import ru.espada.ep.iptip.course.user_course.UserCourseRepository;
+import ru.espada.ep.iptip.event.EventEntity;
+import ru.espada.ep.iptip.event.EventRepository;
 import ru.espada.ep.iptip.s3.S3Service;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
 import ru.espada.ep.iptip.study_groups.StudyGroupRepository;
+import ru.espada.ep.iptip.study_groups.study_group_event.StudyGroupEventEntity;
+import ru.espada.ep.iptip.study_groups.study_group_event.StudyGroupEventRepository;
 import ru.espada.ep.iptip.study_groups.user.UserStudyGroupEntity;
 import ru.espada.ep.iptip.study_groups.user.UserStudyGroupEntityRepository;
 import ru.espada.ep.iptip.university.UniversityEntity;
@@ -35,13 +39,15 @@ import ru.espada.ep.iptip.user.profile.ProfileRepository;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
 import ru.espada.ep.iptip.user.models.request.CreateProfileRequest;
 import ru.espada.ep.iptip.user.permission.UserPermissionService;
+import ru.espada.ep.iptip.user.schedule.ScheduleDto;
 
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,6 +65,8 @@ public class UserService implements UserDetailsService {
     private S3Service s3Service;
     private UserStudyGroupEntityRepository userStudyGroupRepository;
     private StudyGroupRepository studyGroupRepository;
+    private StudyGroupEventRepository studyGroupEventRepository;
+    private EventRepository eventRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -180,6 +188,7 @@ public class UserService implements UserDetailsService {
 
         StudyGroupEntity studyGroup = user.getStudyGroups().stream().findFirst().orElse(null);
 
+        // FIXME: this may be null
         FacultyEntity faculty = studyGroup == null ? null : studyGroup.getFaculty();
         MajorEntity major = faculty == null ? null : faculty.getMajor();
         InstituteEntity insitute = major == null ? null :  major.getInstitute();
@@ -358,8 +367,85 @@ public class UserService implements UserDetailsService {
         this.studyGroupRepository = studyGroupRepository;
     }
 
-    public ScheduleDto getSchedule(Principal principal, Long date, int days) {
-        // TODO: implement
-        return null;
+    public List<ScheduleDto> getSchedule(Principal principal, Long date, int days) {
+        UserStudyGroupEntity userStudyGroup = getMainUserStudyGroup(getUser(principal.getName()).getId());
+        List<StudyGroupEventEntity> studyGroupEventEntities = studyGroupEventRepository.findAllByStudyGroupId(userStudyGroup.getStudyGroupId());
+        studyGroupEventEntities = studyGroupEventEntities.stream()
+                .filter(StudyGroupEventEntity::isMandatory)
+                .toList();
+        List<EventEntity> events = eventRepository.findAllById(studyGroupEventEntities.stream().map(StudyGroupEventEntity::getEventId).toList());
+        events = filterEvents(events, date, days);
+
+        List<ScheduleDto> scheduleDtos = new ArrayList<>();
+        for (EventEntity event : events) {
+
+        }
+
+        return new ScheduleDto(events, days);
     }
+
+    @Autowired
+    public void setStudyGroupEventRepository(StudyGroupEventRepository studyGroupEventRepository) {
+        this.studyGroupEventRepository = studyGroupEventRepository;
+    }
+
+    @Autowired
+    public void setEventRepository(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+    }
+
+    public List<EventEntity> filterEvents(List<EventEntity> events, Long dateTime, int days) {
+        Long endDate = dateTime + days * 24 * 60 * 60 * 1000; // Конечная дата
+
+        return events.stream()
+                .filter(event -> {
+                    Long eventDate = event.getDate();
+
+                    // Если дата события не задана, проверяем на повторяющиеся события
+                    if (eventDate == null) {
+                        // Проверяем, попадает ли событие в диапазон
+                        return isEventInRange(event, dateTime, endDate);
+                    } else {
+                        // Проверяем, попадает ли конкретная дата события в диапазон
+                        return eventDate >= dateTime && eventDate <= endDate;
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    private boolean isEventInRange(EventEntity event, Long startDate, Long endDate) {
+        // Получаем текущую дату
+        Long currentDate = System.currentTimeMillis();
+
+        // Проверяем, попадает ли событие в диапазон
+        for (int i = 0; i < 100; i++) { // Ограничиваем количество итераций
+            Long weekStartDate = startDate + i * 7 * 24 * 60 * 60 * 1000; // Начало недели
+            Long weekEndDate = weekStartDate + 6 * 24 * 60 * 60 * 1000; // Конец недели
+
+            // Проверяем, является ли неделя четной
+            boolean isEvenWeek = (i % 2 == 0);
+
+            // Если событие повторяется в четные недели
+            if (event.getIs_week_even() && !isEvenWeek) {
+                continue;
+            }
+
+            // Проверяем, попадает ли день недели события в диапазон
+            if (weekStartDate <= endDate && weekEndDate >= startDate) {
+                // Проверяем, совпадает ли день недели
+                if (getDayOfWeek(weekStartDate) == event.getWeekday()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private int getDayOfWeek(Long timestamp) {
+        // Преобразуем timestamp в день недели (0 - воскресенье, 1 - понедельник, ..., 6 - суббота)
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        return calendar.get(java.util.Calendar.DAY_OF_WEEK) - 1; // Приводим к 0-6
+    }
+
 }

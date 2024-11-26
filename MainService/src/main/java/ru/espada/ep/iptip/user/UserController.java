@@ -11,6 +11,7 @@ import ru.espada.ep.iptip.user.models.request.CreateProfileRequest;
 import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
 import ru.espada.ep.iptip.user.models.response.UserDto;
 import ru.espada.ep.iptip.user.models.response.UserInstituteDto;
+import ru.espada.ep.iptip.user.schedule.ScheduleDto;
 
 import java.security.Principal;
 import java.util.List;
