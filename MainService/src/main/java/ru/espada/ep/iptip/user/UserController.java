@@ -77,4 +77,9 @@ public class UserController {
     public ResponseEntity<CourseFullDto> getCourse(Principal principal, @PathVariable Long id) {
         return ResponseEntity.ok(userService.getCourseFullDto(principal, id));
     }
+
+    @GetMapping("/schedule/{startDate}/{days}")
+    public ResponseEntity<ScheduleDto> getSchedule(Principal principal, Long startDate, int days) {
+        return ResponseEntity.ok(userService.getSchedule(principal, startDate, days));
+    }
 }

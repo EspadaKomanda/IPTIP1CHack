@@ -18,7 +18,6 @@ public class StudyGroupController {
 
     private StudyGroupService studyGroupService;
 
-    // TODO: add methods: create, add users, remove users, get users, set semester
     @PostMapping("/studyGroup")
     public ResponseEntity<Long> createStudyGroup(Principal principal, @Valid @RequestBody CreateStudyGroupRequest createStudyGroupRequest) {
         Long id = studyGroupService.createStudyGroup(principal, createStudyGroupRequest).getId();
@@ -33,14 +32,14 @@ public class StudyGroupController {
 
     @PatchMapping("/studyGroup")
     public ResponseEntity<?> modifyStudyGroup(Principal principal, @Valid @RequestBody ModifyStudyGroupRequest modifyStudyGroupRequest) {
-        // TODO: implementation
+        studyGroupService.modifyStudyGroup(principal, modifyStudyGroupRequest);
         return null;
     }
 
     @DeleteMapping("/studyGroup")
     public ResponseEntity<?> deleteStudyGroup(Principal principal, Long studyGroupId) {
         studyGroupService.deleteStudyGroup(principal, studyGroupId);
-        return null;
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/studyGroup")
@@ -51,25 +50,24 @@ public class StudyGroupController {
     @PostMapping("/attachUser")
     public ResponseEntity<?> attachUserToStudyGroup(Principal principal, @Valid @RequestBody AttachUsersToStudyGroupRequest attachUsersToStudyGroupRequest) {
         studyGroupService.attachUserToStudyGroup(principal, attachUsersToStudyGroupRequest);
-        return null;
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/detachUser")
     public ResponseEntity<?> detachUserFromStudyGroup(Principal principal, @Valid @RequestBody DetachUserFromStudyGroupRequest detachUserFromStudyGroupRequest) {
-        // TODO: implementation
-        return null;
+        studyGroupService.detachUserFromStudyGroup(principal, detachUserFromStudyGroupRequest);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/setStudyGroupSemester")
     public ResponseEntity<?> setStudyGroupSemester(Principal principal, @Valid @RequestBody SetStudyGroupMembersSemesterRequest setStudyGroupMembersSemesterRequest) {
-        // TODO: implementation
-        return null;
+        studyGroupService.setStudyGroupMembersSemester(principal, setStudyGroupMembersSemesterRequest);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getStudyGroupMembers")
     public ResponseEntity<?> getStudyGroupMembers(Principal principal, Long studyGroupId) {
-        // TODO: implementation
-        return null;
+        return ResponseEntity.ok().body(studyGroupService.getStudyGroupMembers(principal, studyGroupId));
     }
 
     @Autowired

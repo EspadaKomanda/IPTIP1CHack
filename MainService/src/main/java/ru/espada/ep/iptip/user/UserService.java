@@ -358,4 +358,8 @@ public class UserService implements UserDetailsService {
     public void setStudyGroupRepository(StudyGroupRepository studyGroupRepository) {
         this.studyGroupRepository = studyGroupRepository;
     }
+
+    public ScheduleDto getSchedule(Principal principal, Long date, int days) {
+
+    }
 }
