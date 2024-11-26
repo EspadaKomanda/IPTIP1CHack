@@ -180,7 +180,6 @@ public class UserService implements UserDetailsService {
 
         StudyGroupEntity studyGroup = user.getStudyGroups().stream().findFirst().orElse(null);
 
-        // FIXME: this may be null
         FacultyEntity faculty = studyGroup == null ? null : studyGroup.getFaculty();
         MajorEntity major = faculty == null ? null : faculty.getMajor();
         InstituteEntity insitute = major == null ? null :  major.getInstitute();
@@ -360,6 +359,7 @@ public class UserService implements UserDetailsService {
     }
 
     public ScheduleDto getSchedule(Principal principal, Long date, int days) {
-
+        // TODO: implement
+        return null;
     }
 }
