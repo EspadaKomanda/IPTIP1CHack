@@ -42,13 +42,13 @@ export default function Courses() {
                 {courses.map((course) => (
                     <Link key={course.id} href={`/courses/${course.id}`}>
                         <div className="flex items-center mb-4 gap-x-9 bg-customColor1 p-4 rounded-2xl">
-                            <div className="flex-shrink-0 w-52 h-28"> {/* Установите фиксированную ширину и высоту */}
+                            <div className="flex-shrink-0 w-52 h-28">
                                 {course.image ? (
                                     <Image 
                                         src={course.image} 
                                         width={210} 
                                         height={110} 
-                                        alt={course.title || "Course image"} // Provide a fallback alt text
+                                        alt={course.title || "Course image"}
                                         className="w-auto h-full max-w-full" 
                                     />
                                 ) : (
@@ -56,12 +56,12 @@ export default function Courses() {
                                         src={img.course} 
                                         width={210} 
                                         height={110} 
-                                        alt={course.title || "Course image"} // Provide a fallback alt text
+                                        alt={course.title || "Course image"}
                                         className="w-auto h-full max-w-full rounded-2xl" 
                                     />
                                 )}
                             </div>
-                            <div className="flex-1"> {/* Позволяет тексту занимать оставшееся пространство */}
+                            <div className="flex-1">
                                 <h2 className="font-semibold text-customColor7 text-xl">{course.name}</h2>
                                 <p className="font-medium text-customColor4">{course.description}</p>
                             </div>
