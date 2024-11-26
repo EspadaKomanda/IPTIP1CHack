@@ -67,8 +67,6 @@ public class EventServiceImpl implements EventService{
         return eventEntity;
     }
 
-    // TODO: implementation
-
     @Override
     public EventEntity modifyEvent(Principal principal, ModifyEventRequest request) {
         // TODO: check permission

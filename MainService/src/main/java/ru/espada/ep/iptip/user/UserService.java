@@ -185,7 +185,7 @@ public class UserService implements UserDetailsService {
     }
 
     public List<CourseEntityDto> getUserCourses(String username) {
-        UserEntity user = getUser(username);
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         List<UserCourseEntity> userCourses = userCourseRepository.findUserCourseEntitiesByUserIdAndSemester(user.getId(), user.getProfile().getSemester());
         List<CourseEntity> courses = courseRepository.findAllById(userCourses.stream().map(UserCourseEntity::getCourseId).toList());
 

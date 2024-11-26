@@ -56,7 +56,23 @@ public class EventController {
         return ResponseEntity.ok().body(studyGroups);
     }
 
-    // TODO: implement getters of events for particular groups and particular time periods
+    @GetMapping("/event/studyGroup/{studyGroupId}")
+    public ResponseEntity<?> getEventsForStudyGroup(Principal principal, @PathVariable Long studyGroupId) {
+        // TODO: implementation
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/event/studyGroup/{studyGroupId}/upcoming")
+    public ResponseEntity<?> getUpcomingEventsForStudyGroup(Principal principal, @PathVariable Long studyGroupId) {
+        // TODO: implementation
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/event/studyGroup/{studyGroupId}/from/{from}/to/{to}")
+    public ResponseEntity<?> getEventsForStudyGroup(Principal principal, @PathVariable Long studyGroupId, @PathVariable Long from, @PathVariable Long to) {
+        // TODO: implementation
+        return ResponseEntity.ok().build();
+    }
 
     @Autowired
     public void setEventService(EventService eventService) {
