@@ -122,10 +122,10 @@ export default function Profile() {
                     <div className="row-span-2">
                         <p className="text-right text-sm pr-4 font-medium text-customColor4">роль в институте</p>
                         <div className=" bg-customColor1 rounded-2xl p-9 pb-16 gap-y-9 flex flex-col">  
-                            <p>Направление: {instituteInfo ? instituteInfo.universityName : "Неизвестно"} <span className="text-customColor4"></span></p>
-                            <p>Код программы: <span className="text-customColor4"></span></p> 
-                            <p>Институт: <span className="text-customColor4"></span></p> 
-                            <p>Профиль: <span className="text-customColor4"></span></p> 
+                            <p>Направление: {instituteInfo ? instituteInfo.majorName : "Неизвестно"} <span className="text-customColor4"></span></p>
+                            <p>Код программы: {instituteInfo ? instituteInfo.majorCode : "Неизвестно"} <span className="text-customColor4"></span></p>
+                            <p>Институт: {instituteInfo ? instituteInfo.instituteName : "Неизвестно"} <span className="text-customColor4"></span></p>
+                            <p>Профиль: {instituteInfo ? instituteInfo.facultyName : "Неизвестно"} <span className="text-customColor4"></span></p>
                             <p>Курс: <span className="text-customColor4"></span></p> 
                             <p>Группа: <span className="text-customColor4"></span></p> 
                         </div>

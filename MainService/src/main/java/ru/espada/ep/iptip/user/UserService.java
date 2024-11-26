@@ -226,34 +226,40 @@ public class UserService implements UserDetailsService {
         userPermissionService.addPermission(addRoleRequest.getUsername(), permission, addRoleRequest.getStartTime(), addRoleRequest.getEndTime());
     }
 
+    public List<UserStudyGroupEntity> getUserStudyGroups(Long userId) {
+        return userStudyGroupRepository.findUserStudyGroupEntitiesByUserId(userId);
+    }
+
+    public UserStudyGroupEntity getMainUserStudyGroup(Long userId) {
+        return userStudyGroupRepository.findUserStudyGroupEntitiesByUserIdAndMain(userId, true);
+    }
+
     private UserDto toUserDto(UserEntity user) {
-        if (user.getProfile() == null) {
-            return UserDto.builder()
-                    .id(user.getId())
-                    .username(user.getUsername())
-                    .createdAt(user.getCreatedAt())
-                    .build();
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setUsername(user.getUsername());
+        userDto.setCreatedAt(user.getCreatedAt());
+
+        if (user.getProfile() != null) {
+            userDto.setProfileName(user.getProfile().getName());
+            userDto.setProfileSurname(user.getProfile().getSurname());
+            userDto.setProfilePatronymic(user.getProfile().getPatronymic());
+            userDto.setProfilePhone(user.getProfile().getPhone());
+            userDto.setProfileEmail(user.getProfile().getEmail());
+            userDto.setProfileBirthDate(user.getProfile().getBirthDate());
+            userDto.setProfileSemester(user.getProfile().getSemester());
+            userDto.setProfileStudentIdCard(user.getProfile().getStudentIdCard());
+            userDto.setProfileIcon(user.getProfile().getIcon());
+            userDto.setProfileEmailConfirmed(user.getProfile().isEmailConfirmed());
+            userDto.setProfilePhoneConfirmed(user.getProfile().isPhoneConfirmed());
+            userDto.setProfileSemester(user.getProfile().getSemester());
         }
-        return UserDto.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .createdAt(user.getCreatedAt())
 
-                .profileName(user.getProfile().getName())
-                .profileSurname(user.getProfile().getSurname())
-                .profilePatronymic(user.getProfile().getPatronymic())
-
-                .profilePhone(user.getProfile().getPhone())
-                .profilePhoneConfirmed(user.getProfile().isPhoneConfirmed())
-                .profileEmail(user.getProfile().getEmail())
-                .profileEmailConfirmed(user.getProfile().isEmailConfirmed())
-
-                .profileBirthDate(user.getProfile().getBirthDate())
-                .profileSemester(user.getProfile().getSemester())
-                .profileStudentIdCard(user.getProfile().getStudentIdCard())
-                .profileIcon(user.getProfile().getIcon())
-                .studyGroupNames(user.getStudyGroups().stream().map(StudyGroupEntity::getName).collect(Collectors.toSet()))
-                .build();
+        UserStudyGroupEntity mainUserStudyGroup = getMainUserStudyGroup(user.getId());
+        if (mainUserStudyGroup != null) {
+            userDto.setStudyGroup(studyGroupRepository.findById(getMainUserStudyGroup(user.getId()).getStudyGroupId()).orElseThrow(() -> new RuntimeException("exception.study_group.not_found")).getName());
+        }
+        return userDto;
     }
 
     @Transactional
@@ -334,6 +340,7 @@ public class UserService implements UserDetailsService {
                 .universityName(studyGroup.getFaculty().getMajor().getInstitute().getUniversity().getName())
                 .instituteName(studyGroup.getFaculty().getMajor().getInstitute().getName())
                 .majorName(studyGroup.getFaculty().getMajor().getName())
+                .majorCode(studyGroup.getFaculty().getMajor().getMajorCode())
                 .facultyName(studyGroup.getFaculty().getName())
                 .build();
     }

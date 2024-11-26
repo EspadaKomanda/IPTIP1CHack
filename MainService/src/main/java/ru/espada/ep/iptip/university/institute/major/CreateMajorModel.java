@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class CreateMajorModel {
 
     private String name;
+    private String code;
     private Long instituteId;
 
 }

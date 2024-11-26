@@ -23,6 +23,6 @@ public class UserStudyGroupEntity {
     @Column(name = "study_group_id")
     private Long studyGroupId;
     @Column(name = "is_main")
-    private boolean isMain = false;
+    private boolean main = false;
 
 }

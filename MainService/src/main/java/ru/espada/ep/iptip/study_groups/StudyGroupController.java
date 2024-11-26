@@ -44,9 +44,8 @@ public class StudyGroupController {
     }
 
     @GetMapping("/studyGroup")
-    public ResponseEntity<?> getStudyGroup(Principal principal, Long studyGroupId) {
-        studyGroupService.getStudyGroup(principal, studyGroupId);
-        return null;
+    public ResponseEntity<StudyGroupEntity> getStudyGroup(Principal principal, Long studyGroupId) {
+        return ResponseEntity.ok().body(studyGroupService.getStudyGroup(principal, studyGroupId));
     }
 
     @PostMapping("/attachUser")

@@ -26,6 +26,7 @@ public class UserDto {
     private boolean profileEmailConfirmed;
     private int profileSemester;
     private String profileStudentIdCard;
-    private Set<String> studyGroupNames;
+    private int course;
+    private String studyGroup;
 
 }

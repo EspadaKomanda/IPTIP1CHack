@@ -14,6 +14,7 @@ public class UserInstituteDto {
     private String universityName;
     private String instituteName;
     private String majorName;
+    private String majorCode;
     private String facultyName;
 
 }

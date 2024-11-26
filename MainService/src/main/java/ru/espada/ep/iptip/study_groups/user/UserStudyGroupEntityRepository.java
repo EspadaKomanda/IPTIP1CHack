@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface UserStudyGroupEntityRepository extends JpaRepository<UserStudyGroupEntity, Long> {
     List<UserStudyGroupEntity> findUserStudyGroupEntitiesByUserId(Long userId);
+
+    UserStudyGroupEntity findUserStudyGroupEntitiesByUserIdAndMain(Long userId, boolean main);
 }
