@@ -174,7 +174,7 @@ public class UserService implements UserDetailsService {
     public InstituteInfoResponse getInstituteInfo(String username) {
 
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        ProfileEntity profile = profileRepository.findByUserId(user.getId());
+        ProfileEntity profile = user.getProfile();
         int semester = profile.getSemester();
         int course = semester / 2;
 
