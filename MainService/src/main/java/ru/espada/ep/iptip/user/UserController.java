@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @GetMapping("/schedule/{startDate}/{days}")
-    public ResponseEntity<ScheduleDto> getSchedule(Principal principal, Long startDate, int days) {
+    public ResponseEntity<?> getSchedule(Principal principal, Long startDate, int days) {
         return ResponseEntity.ok(userService.getSchedule(principal, startDate, days));
     }
 }

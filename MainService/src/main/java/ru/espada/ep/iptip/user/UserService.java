@@ -368,6 +368,8 @@ public class UserService implements UserDetailsService {
     }
 
     public List<ScheduleDto> getSchedule(Principal principal, Long date, int days) {
+
+        // TODO: new method, requires edits and testing
         UserStudyGroupEntity userStudyGroup = getMainUserStudyGroup(getUser(principal.getName()).getId());
         List<StudyGroupEventEntity> studyGroupEventEntities = studyGroupEventRepository.findAllByStudyGroupId(userStudyGroup.getStudyGroupId());
         studyGroupEventEntities = studyGroupEventEntities.stream()
@@ -378,10 +380,15 @@ public class UserService implements UserDetailsService {
 
         List<ScheduleDto> scheduleDtos = new ArrayList<>();
         for (EventEntity event : events) {
-
+            ScheduleDto scheduleDto = ScheduleDto.builder()
+                    .date(new Date(event.getDate()).getDay())
+                    .dayOfWeek("" + (event.getWeekday()))
+                    .lessons(new ArrayList<>())
+                    .build();
+            scheduleDtos.add(scheduleDto);
         }
 
-        return new ScheduleDto(events, days);
+        return scheduleDtos;
     }
 
     @Autowired
