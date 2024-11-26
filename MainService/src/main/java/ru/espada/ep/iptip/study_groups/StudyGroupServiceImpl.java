@@ -3,6 +3,7 @@ package ru.espada.ep.iptip.study_groups;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.espada.ep.iptip.study_groups.models.requests.*;
 import ru.espada.ep.iptip.university.UniversityEntity;
 import ru.espada.ep.iptip.university.institute.InstituteEntity;
 import ru.espada.ep.iptip.university.institute.major.MajorEntity;
@@ -12,6 +13,7 @@ import ru.espada.ep.iptip.user.UserService;
 import ru.espada.ep.iptip.user.permission.UserPermissionEntity;
 import ru.espada.ep.iptip.user.permission.UserPermissionService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -53,6 +55,59 @@ public class StudyGroupServiceImpl implements StudyGroupService {
         return userPermissionService.hasPermission(username, "university.%s.institute.%s.major.%s.faculty.%s.study_group.%s".formatted(
                 university.getId(), institute.getId(), major.getId(), faculty.getId(), studyGroupEntity.getId()
         ));
+    }
+
+    @Override
+    public StudyGroupEntity createStudyGroup(Principal principal, CreateStudyGroupRequest request) {
+        // TODO: implementation
+        return null;
+    }
+
+    @Override
+    public StudyGroupEntity createStudyGroupWithUsers(Principal principal, CreateStudyGroupWithUsersRequest createRequest) {
+        // TODO: implementation
+        return null;
+    }
+
+    @Override
+    public StudyGroupEntity modifyStudyGroup(Principal principal, ModifyStudyGroupRequest request) {
+        // TODO: implementation
+        return null;
+    }
+
+    @Override
+    public StudyGroupEntity getStudyGroup(Principal principal, Long studyGroupId) {
+        // TODO: implementation
+        return null;
+    }
+
+    @Override
+    public void deleteStudyGroup(Principal principal, Long studyGroupId) {
+        // TODO: implementation
+
+    }
+
+    @Override
+    public void attachUserToStudyGroup(Principal principal, AttachUserToStudyGroupRequest request) {
+        // TODO: implementation
+
+    }
+
+    @Override
+    public void detachUserFromStudyGroup(Principal principal, DetachUserFromStudyGroupRequest request) {
+        // TODO: implementation
+
+    }
+
+    @Override
+    public void setStudyGroupMembersSemester(Principal principal, SetStudyGroupMembersSemesterRequest request) {
+        // TODO: implementation
+    }
+
+    @Override
+    public List<Long> getStudyGroupMembers(Principal principal, Long studyGroupId) {
+        // TODO: implementation
+        return List.of();
     }
 
     @Autowired

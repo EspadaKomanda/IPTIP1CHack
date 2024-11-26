@@ -41,6 +41,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -172,33 +173,33 @@ public class UserService implements UserDetailsService {
     @Transactional
     public InstituteInfoResponse getInstituteInfo(String username) {
 
-        UserEntity user = getUser(username);
-        ProfileEntity profile = user.getProfile();
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        ProfileEntity profile = profileRepository.findByUserId(user.getId());
         int semester = profile.getSemester();
         int course = semester / 2;
 
         StudyGroupEntity studyGroup = user.getStudyGroups().stream().findFirst().orElse(null);
 
         // FIXME: this may be null
-        FacultyEntity faculty = studyGroup.getFaculty();
-        MajorEntity major = faculty.getMajor();
-        InstituteEntity insitute = major.getInstitute();
-        UniversityEntity university = insitute.getUniversity();
+        FacultyEntity faculty = studyGroup == null ? null : studyGroup.getFaculty();
+        MajorEntity major = faculty == null ? null : faculty.getMajor();
+        InstituteEntity insitute = major == null ? null :  major.getInstitute();
+        UniversityEntity university = insitute == null ? null : insitute.getUniversity();
 
         return InstituteInfoResponse.builder()
-                .major(major.getName())
-                .majorCode(major.getMajorCode())
-                .faculty(faculty.getName())
-                .institute(insitute.getName())
-                .university(university.getName())
-                .studyGroup(studyGroup.getName())
+                .major(major == null ? null : major.getName())
+                .majorCode(major == null ? null : major.getMajorCode())
+                .faculty(faculty == null ? null : faculty.getName())
+                .institute(insitute == null ? null : insitute.getName())
+                .university(university == null ? null : university.getName())
+                .studyGroup(studyGroup == null ? null : studyGroup.getName())
                 .semester(semester)
                 .course(course)
                 .build();
     }
 
     public List<CourseEntityDto> getUserCourses(String username) {
-        UserEntity user = getUser(username);
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         List<UserCourseEntity> userCourses = userCourseRepository.findUserCourseEntitiesByUserIdAndSemester(user.getId(), user.getProfile().getSemester());
         List<CourseEntity> courses = courseRepository.findAllById(userCourses.stream().map(UserCourseEntity::getCourseId).toList());
 
@@ -312,14 +313,10 @@ public class UserService implements UserDetailsService {
     public void setCourseRepository(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
     }
+
     @Autowired
     public void setUserCourseRepository(UserCourseRepository userCourseRepository) {
         this.userCourseRepository = userCourseRepository;
-    }
-
-    @Autowired
-    public void setS3Service(S3Service s3Service) {
-        this.s3Service = s3Service;
     }
 
     @Autowired
@@ -344,6 +341,9 @@ public class UserService implements UserDetailsService {
     @Autowired
     public void setUserStudyGroupRepository(UserStudyGroupEntityRepository userStudyGroupRepository) {
         this.userStudyGroupRepository = userStudyGroupRepository;
+
+    public void setS3Service(S3Service s3Service) {
+        this.s3Service = s3Service;
     }
 
     @Autowired
