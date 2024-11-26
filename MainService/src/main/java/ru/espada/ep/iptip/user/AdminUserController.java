@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
 
+import ru.espada.ep.iptip.user.models.response.UserDto;
+
 import java.security.Principal;
 import java.util.List;
 
@@ -27,7 +29,8 @@ public class AdminUserController {
 
     @GetMapping("/users/{page}")
     public ResponseEntity<List<UserDto>> getUsers(@PathVariable int page) {
-        return ResponseEntity.ok(userService.allUsers(page));
+        List<UserDto> users = userService.allUsers(page);
+        return ResponseEntity.ok().body(users);
     }
 
     @DeleteMapping("")

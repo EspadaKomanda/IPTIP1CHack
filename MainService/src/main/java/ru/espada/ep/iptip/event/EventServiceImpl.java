@@ -33,7 +33,7 @@ public class EventServiceImpl implements EventService{
                 .name(request.getName())
                 .date(request.getDate())
                 .weekday(request.getWeekday())
-                .is_week_event(request.is_week_event())
+                .is_week_even(request.is_week_event())
                 .begin_date(request.getBegin_date())
                 .end_date(request.getEnd_date())
                 .duration(request.getDuration())
@@ -50,7 +50,7 @@ public class EventServiceImpl implements EventService{
                 .name(request.getName())
                 .date(request.getDate())
                 .weekday(request.getWeekday())
-                .is_week_event(request.is_week_event())
+                .is_week_even(request.is_week_event())
                 .begin_date(request.getBegin_date())
                 .end_date(request.getEnd_date())
                 .duration(request.getDuration())
@@ -76,7 +76,7 @@ public class EventServiceImpl implements EventService{
         eventEntity.setDate(Optional.ofNullable(request.getDate()).orElse(eventEntity.getDate()));
         // FIXME: i am not sure, can bools be null in java? what will happen down here?
         eventEntity.setWeekday(Optional.ofNullable(request.getWeekday()).orElse(eventEntity.getWeekday()));
-        eventEntity.set_week_event(Optional.ofNullable(request.is_week_event()).orElse(eventEntity.is_week_event()));
+        eventEntity.setIs_week_even(Optional.ofNullable(request.is_week_event()).orElse(eventEntity.getIs_week_even()));
         eventEntity.setBegin_date(Optional.ofNullable(request.getBegin_date()).orElse(eventEntity.getBegin_date()));
         eventEntity.setEnd_date(Optional.ofNullable(request.getEnd_date()).orElse(eventEntity.getEnd_date()));
         eventEntity.setDuration(Optional.ofNullable(request.getDuration()).orElse(eventEntity.getDuration()));

@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SetStudyGroupMembersSemesterRequest {
     private Long studyGroupId;
-    private Long semesterId;
+    private int semester;
 }

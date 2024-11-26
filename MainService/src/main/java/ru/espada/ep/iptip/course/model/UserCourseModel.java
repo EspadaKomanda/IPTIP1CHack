@@ -13,5 +13,6 @@ public class UserCourseModel {
 
     private Long courseId;
     private Long userId;
+    private int semester;
 
 }

@@ -9,5 +9,6 @@ import java.util.List;
 public interface StudyGroupEventRepository extends JpaRepository<StudyGroupEventEntity, Long> {
     StudyGroupEventEntity findByEventIdAndStudyGroupId(Long eventId, Long studyGroupId);
 
+    List<StudyGroupEventEntity> findAllByStudyGroupId(Long studyGroupId);
     List<StudyGroupEventEntity> findAllByEventId(Long eventId);
 }
