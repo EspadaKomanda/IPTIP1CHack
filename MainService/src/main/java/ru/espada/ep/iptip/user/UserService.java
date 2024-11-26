@@ -341,6 +341,7 @@ public class UserService implements UserDetailsService {
     @Autowired
     public void setUserStudyGroupRepository(UserStudyGroupEntityRepository userStudyGroupRepository) {
         this.userStudyGroupRepository = userStudyGroupRepository;
+    }
 
     public void setS3Service(S3Service s3Service) {
         this.s3Service = s3Service;
