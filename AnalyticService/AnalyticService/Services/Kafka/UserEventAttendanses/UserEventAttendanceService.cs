@@ -90,7 +90,7 @@ namespace AnalyticService.Services.UserEventAttendanses
                 throw;
             }
         }
-        public IQueryable<UserEventAttendance> GetUserEventAttendance()
+        public IQueryable<UserEventAttendance> GetUserEventAttendances()
         {
             try
             {

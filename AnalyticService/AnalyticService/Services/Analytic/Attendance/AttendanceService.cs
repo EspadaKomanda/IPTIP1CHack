@@ -28,10 +28,8 @@ namespace AnalyticService.Services.Analytic.Attendance
                     .Where(t=>t.Event.Date>DateTime.FromBinary(request.StartTime) && t.Event.Date<DateTime.FromBinary(request.EndTime)
                     && t.Event.BeginDate>DateTime.FromBinary(request.StartDate) && t.Event.BeginDate<DateTime.FromBinary(request.EndDate));
                 return new PercentResponse() {
-                    Percent = (double)(time.Where(x=>x.Status).Count() / time.Count())                 
+                    Percent =- (double)(time.Where(x=>x.Status).Count() / time.Count())
                 };
-                
-                
             }
             catch (Exception e)
             {
@@ -73,7 +71,6 @@ namespace AnalyticService.Services.Analytic.Attendance
                 throw;
             }
         }
-       
         private DayOfWeek GetDayOfWeek(int day)
         {
             if(day == 1)
@@ -107,6 +104,5 @@ namespace AnalyticService.Services.Analytic.Attendance
             return DayOfWeek.Monday;
         }
 
-       
     }
 }

@@ -12,6 +12,5 @@ namespace AnalyticService.Services.Analytic.Attendance
         PercentResponse GetPercentTime(AttendancePercentTimeRequest request);
         PercentResponse GetPercentSubject(AttendancePecentSubjectRequest request);
         PercentResponse GetPercentWeekday(AttendancePercentWeekdayRequest request);
-        
     }
 }

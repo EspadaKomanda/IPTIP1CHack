@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AnalyticService.Database;
 using AnalyticService.Database.Models;
 using AnalyticService.Models.Requests.QuestionRequests;
+using AnalyticService.Models.Requests.TestsRequests;
 using KafkaAttributesLib.Attributes;
 using Microsoft.EntityFrameworkCore;
 

@@ -7,6 +7,6 @@ namespace AnalyticService.Models.Analytic.Responses
 {
     public class TimeResponse
     {
-        
+        public long Time { get; set; }
     }
 }
