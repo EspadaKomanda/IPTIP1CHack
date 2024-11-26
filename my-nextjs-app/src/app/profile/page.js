@@ -2,15 +2,19 @@
 import NavigationComponent from "@/components/navigationComponent";
 import Image from "next/image";
 import { useState, useRef } from "react";
-
+import apiConfig from "../../assets/apiConfig.js";
+import { useEffect } from "react";
 
 export default function Profile() {
 
-    const [avatar, setAvatar] = useState('/default.png');
+    const [avatar, setAvatar] = useState('/images/img1.png');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+    const [instituteInfo, setInstituteInfo] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const fileInputRef = useRef(null);
+    const [userData, setUserData] = useState(null);
+
 
     const handleAvatarChange = (file) => {
         const reader = new FileReader();
@@ -20,6 +24,50 @@ export default function Profile() {
         };
         reader.readAsDataURL(file);
     };
+
+    function fetchProfile() {
+        fetch(apiConfig.getUserUser, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token")
+            }
+        }).then(async (res) => {
+            const data = await res.json()
+            setUserData(data)
+            console.log(data)
+        })
+    }
+    function fetchInstitute(username) {
+        const url = apiConfig.getUserInstituteInfoUsernameUsername.replace('{username}', username);
+        
+        fetch(url, {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token")
+            }
+        }).then(async (res) => {
+            if (!res.ok) {
+                console.log(res);
+                throw new Error('Network response was not ok');
+            }
+            const data = await res.json();
+            setInstituteInfo(data);
+            console.log(data);
+        }).catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    }
+    
+    
+    useEffect(() => {
+        fetchProfile();
+        fetchInstitute("admin");
+    }, []);
+
+    if (!userData) {
+        return <div>Loading...</div>;
+    }
+    
 
     const handleFileInputClick = () => {
         fileInputRef.current.click();
@@ -53,25 +101,28 @@ export default function Profile() {
                     <div className="">
                         <p className="text-right text-sm pr-4 font-medium text-customColor4">личная информация</p>
                         <div className="bg-customColor1 rounded-2xl p-9 sm:flex ">
-                            <Image 
-                                src={avatar} 
-                                alt="" 
-                                width={130} 
-                                height={130} 
-                                className="rounded-full border-2 border-customColor1 bg-customColor8 cursor-pointer mr-9 mb-4 h-32" 
-                                onClick={() => setIsModalOpen(true)}
-                            />
+                            {avatar ? (
+                                <Image
+                                src={avatar}
+                                alt="User Image"
+                                width={130}
+                                height={130}
+                                />
+                            ) : (
+                                <div className="bg-customColor3 flex items-center justify-center w-32 h-32 rounded-full">
+                                </div>
+                            )}
                             <div className="gap-y-9 flex flex-col">
-                                <p className="text-customColor7 text-xl">Имя Фамилия Отчество</p>
-                                <p>Дата рождения: <span className="text-customColor4"></span></p>
-                                <p>№ студенческого: <span className="text-customColor4"></span></p>
+                                <p className="text-customColor7 text-xl">{userData.profileName} {userData.profileSurname} {userData.profilePatronymic}</p>
+                                <p>Дата рождения: {userData.profileBirthDate.split("T")[0]} <span className="text-customColor4"></span></p>
+                                <p>№ студенческого: {userData.profileStudentIdCard}<span className="text-customColor4"></span></p>
                             </div>
                         </div>
                     </div>
                     <div className="row-span-2">
                         <p className="text-right text-sm pr-4 font-medium text-customColor4">роль в институте</p>
                         <div className=" bg-customColor1 rounded-2xl p-9 pb-16 gap-y-9 flex flex-col">  
-                            <p>Направление: <span className="text-customColor4"></span></p>
+                            <p>Направление: {} <span className="text-customColor4"></span></p>
                             <p>Код программы: <span className="text-customColor4"></span></p> 
                             <p>Институт: <span className="text-customColor4"></span></p> 
                             <p>Профиль: <span className="text-customColor4"></span></p> 
@@ -82,8 +133,8 @@ export default function Profile() {
                     <div>
                         <p className="text-right text-sm pr-4 font-medium text-customColor4">контакты</p>
                         <div className=" bg-customColor1 rounded-2xl p-9 gap-y-9 flex flex-col"> 
-                            <p>Телефон: <span className="text-customColor4"></span></p>
-                            <p>Email: <span className="text-customColor4"></span></p> 
+                            <p>Телефон: {userData.profilePhone}<span className="text-customColor4"></span></p>
+                            <p>Email: {userData.profileEmail}<span className="text-customColor4"></span></p> 
                         </div>
                     </div>
                 </div>
