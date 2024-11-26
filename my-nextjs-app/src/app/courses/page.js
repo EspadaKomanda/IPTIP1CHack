@@ -3,20 +3,31 @@ import { useEffect, useState } from "react";
 import NavigationComponent from "@/components/navigationComponent";
 import Image from "next/image";
 import Link from "next/link";
-
+import apiConfig from "@/assets/apiConfig";
+import * as img from "../../assets/images";
 
 export default function Courses() {
     const [courses, setCourses] = useState([]);
 
-    const fetchCourses = async () => {
+    async function fetchCourses() {
         try {
-            const response = await fetch('/jsons/courses.json');
+            const url = apiConfig.getUserCourses;
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
             const data = await response.json();
+            console.log(data);
             setCourses(data);
         } catch (error) {
             console.log(error);
         }
-    };
+    }    
 
     useEffect(() => {
         fetchCourses();
@@ -30,16 +41,28 @@ export default function Courses() {
             <main className="container">
                 {courses.map((course) => (
                     <Link key={course.id} href={`/courses/${course.id}`}>
-                        <div key={course.id} className="flex items-center mb-4 gap-x-9 bg-customColor1 p-4 rounded-2xl">
-                            <Image 
-                                src={course.image} 
-                                width={210} 
-                                height={110} 
-                                alt={course.title} 
-                                className="w-auto h-28 max-w-full" 
-                            />
-                            <div>
-                                <h2 className="font-semibold text-customColor7 text-xl">{course.title}</h2>
+                        <div className="flex items-center mb-4 gap-x-9 bg-customColor1 p-4 rounded-2xl">
+                            <div className="flex-shrink-0 w-52 h-28"> {/* Установите фиксированную ширину и высоту */}
+                                {course.image ? (
+                                    <Image 
+                                        src={course.image} 
+                                        width={210} 
+                                        height={110} 
+                                        alt={course.title || "Course image"} // Provide a fallback alt text
+                                        className="w-auto h-full max-w-full" 
+                                    />
+                                ) : (
+                                    <Image 
+                                        src={img.course} 
+                                        width={210} 
+                                        height={110} 
+                                        alt={course.title || "Course image"} // Provide a fallback alt text
+                                        className="w-auto h-full max-w-full rounded-2xl" 
+                                    />
+                                )}
+                            </div>
+                            <div className="flex-1"> {/* Позволяет тексту занимать оставшееся пространство */}
+                                <h2 className="font-semibold text-customColor7 text-xl">{course.name}</h2>
                                 <p className="font-medium text-customColor4">{course.description}</p>
                             </div>
                         </div>
@@ -49,4 +72,3 @@ export default function Courses() {
         </>
     );
 }
-

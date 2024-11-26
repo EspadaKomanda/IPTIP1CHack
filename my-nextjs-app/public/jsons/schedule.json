@@ -1,0 +1,300 @@
+{
+    "days": [
+      {
+        "date": 25,
+        "dayOfWeek": "Понедельник",
+        "lessons": [
+          {
+            "subject": "Компьютерный дизайн",
+            "type": "практика",
+            "time": "9:00 - 10:30",
+            "location": "419 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 1,
+            "mandatory": true
+          },
+          {
+            "subject": "История искусств",
+            "type": "лекция",
+            "time": "10:40 - 12:10",
+            "location": "420 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 2,
+            "mandatory": true
+          },
+          {
+            "subject": "Программирование",
+            "type": "лабораторная",
+            "time": "12:40 - 14:10",
+            "location": "421 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 3,
+            "mandatory": true
+          },
+          {
+            "subject": "Крутое мероприятие",
+            "type": null,
+            "time": "14:20 - 15:50",
+            "location": "A-13 (B-78)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 4,
+            "mandatory": true
+          }
+        ]
+      },
+      {
+        "date": 26,
+        "dayOfWeek": "Вторник",
+        "lessons": [
+          {
+            "subject": "Графический дизайн",
+            "type": "практика",
+            "time": "9:00 - 10:30",
+            "location": "422 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 1,
+            "mandatory": true
+          },
+          {
+            "subject": "Теория вероятностей",
+            "type": "лекция",
+            "time": "10:40 - 12:10",
+            "location": "423 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 2,
+            "mandatory": true
+          },
+          {
+            "subject": "Веб-дизайн",
+            "type": "лабораторная",
+            "time": "12:40 - 14:10",
+            "location": "424 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 3,
+            "mandatory": true
+          },
+          {
+            "subject": "Крутое мероприятие",
+            "type": null,
+            "time": "14:20 - 15:50",
+            "location": "A-13 (B-78)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 4,
+            "mandatory": true
+          }
+        ]
+      },
+      {
+        "date": 27,
+        "dayOfWeek": "Среда",
+        "lessons": [
+          {
+            "subject": "Анимация",
+            "type": "практика",
+            "time": "9:00 - 10:30",
+            "location": "425 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 1,
+            "mandatory": true
+          },
+          {
+            "subject": "Философия",
+            "type": "лекция",
+            "time": "10:40 - 12:10",
+            "location": "426 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 2,
+            "mandatory": true
+          },
+          {
+            "subject": "Мультимедиа",
+            "type": "лабораторная",
+            "time": "12:40 - 14:10",
+            "location": "427 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 3,
+            "mandatory": true
+          },
+          {
+            "subject": "Крутое мероприятие",
+            "type": null,
+            "time": "14:20 - 15:50",
+            "location": "A-13 (B-78)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 4,
+            "mandatory": true
+          }
+        ]
+      },
+      {
+        "date": 28,
+        "dayOfWeek": "Четверг",
+        "lessons": [
+          {
+            "subject": "3D-моделирование",
+            "type": "практика",
+            "time": "9:00 - 10:30",
+            "location": "428 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 1,
+            "mandatory": true
+          },
+          {
+            "subject": "Экономика",
+            "type": "лекция",
+            "time": "10:40 - 12:10",
+            "location": "429 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 2,
+            "mandatory": true
+          },
+          {
+            "subject": "Мобильная разработка",
+            "type": "лабораторная",
+            "time": "12:40 - 14:10",
+            "location": "430 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 3,
+            "mandatory": true
+          },
+          {
+            "subject": "Крутое мероприятие",
+            "type": null,
+            "time": "14:20 - 15:50",
+            "location": "A-13 (B-78)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 4,
+            "mandatory": true
+          }
+        ]
+      },
+      {
+        "date": 29,
+        "dayOfWeek": "Пятница",
+        "lessons": [
+          {
+            "subject": "Цифровая фотография",
+            "type": "практика",
+            "time": "9:00 - 10:30",
+            "location": "431 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 1,
+            "mandatory": true
+          },
+          {
+            "subject": "Социология",
+            "type": "лекция",
+            "time": "10:40 - 12:10",
+            "location": "432 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 2,
+            "mandatory": true
+          },
+          {
+            "subject": "Интерактивные медиа",
+            "type": "лабораторная",
+            "time": "12:40 - 14:10",
+            "location": "433 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 3,
+            "mandatory": true
+          },
+          {
+            "subject": "Крутое мероприятие",
+            "type": null,
+            "time": "14:20 - 15:50",
+            "location": "A-13 (B-78)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 4,
+            "mandatory": true
+          }
+        ]
+      },
+      {
+        "date": 30,
+        "dayOfWeek": "Суббота",
+        "lessons": [
+          {
+            "subject": "Основы UX/UI",
+            "type": "практика",
+            "time": "9:00 - 10:30",
+            "location": "434 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 1,
+            "mandatory": true
+          },
+          {
+            "subject": "Культурология",
+            "type": "лекция",
+            "time": "10:40 - 12:10",
+            "location": "435 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 2,
+            "mandatory": true
+          },
+          {
+            "subject": "Анализ данных",
+            "type": "лабораторная",
+            "time": "12:40 - 14:10",
+            "location": "436 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 3,
+            "mandatory": true
+          },
+          {
+            "subject": "Крутое мероприятие",
+            "type": null,
+            "time": "14:20 - 15:50",
+            "location": "A-13 (B-78)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 4,
+            "mandatory": true
+          }
+        ]
+      },
+      {
+        "date": 1,
+        "dayOfWeek": "Воскресенье",
+        "lessons": [
+          {
+            "subject": "Введение в искусственный интеллект",
+            "type": "практика",
+            "time": "9:00 - 10:30",
+            "location": "437 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 1,
+            "mandatory": true
+          },
+          {
+            "subject": "Литература",
+            "type": "лекция",
+            "time": "10:40 - 12:10",
+            "location": "438 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 2,
+            "mandatory": true
+          },
+          {
+            "subject": "Основы программирования",
+            "type": "лабораторная",
+            "time": "12:40 - 14:10",
+            "location": "439 (СГ-22)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 3,
+            "mandatory": true
+          },
+          {
+            "subject": "Крутое мероприятие",
+            "type": null,
+            "time": "14:20 - 15:50",
+            "location": "A-13 (B-78)",
+            "teacher": "Фамилия Имя Отчество",
+            "lessonNumber": 4,
+            "mandatory": true
+          }
+        ]
+      }
+    ]
+  }
+  
+  
