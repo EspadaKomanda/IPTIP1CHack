@@ -31,7 +31,7 @@ public class QuestionEntity {
     @Column(nullable = false)
     @FieldPermission
     private QuestionType questionType;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     @FieldPermission
     private String content;
     @ManyToOne

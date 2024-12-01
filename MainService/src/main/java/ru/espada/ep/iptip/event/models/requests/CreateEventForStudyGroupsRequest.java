@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class CreateEventForStudyGroupsRequest {
-    // TODO: implement request model
     @NotNull
     private String name;
     @NotNull

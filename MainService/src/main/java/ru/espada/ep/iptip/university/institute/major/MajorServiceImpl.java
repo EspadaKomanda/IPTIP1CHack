@@ -20,6 +20,7 @@ public class MajorServiceImpl implements MajorService {
         InstituteEntity institute = instituteRepository.findById(createMajorModel.getInstituteId()).orElseThrow(() -> new UsernameNotFoundException("Institute not found"));
         MajorEntity majorEntity = repository.save(MajorEntity.builder()
                 .name(createMajorModel.getName())
+                .majorCode(createMajorModel.getCode())
                 .institute(institute)
                 .build());
         return majorEntity.getId();

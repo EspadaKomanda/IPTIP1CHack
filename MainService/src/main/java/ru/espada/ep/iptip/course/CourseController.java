@@ -54,7 +54,8 @@ public class CourseController {
     public ResponseEntity<?> attachUserToCourse(@Valid @RequestBody UserCourseModel attachUserToCourseModel) {
         courseService.attachUserToCourse(
                 attachUserToCourseModel.getCourseId(),
-                attachUserToCourseModel.getUserId()
+                attachUserToCourseModel.getUserId(),
+                attachUserToCourseModel.getSemester()
         );
         return ResponseEntity.ok().build();
     }

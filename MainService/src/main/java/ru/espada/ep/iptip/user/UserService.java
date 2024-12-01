@@ -17,26 +17,37 @@ import ru.espada.ep.iptip.course.*;
 import ru.espada.ep.iptip.course.model.CourseEntityDto;
 import ru.espada.ep.iptip.course.user_course.UserCourseEntity;
 import ru.espada.ep.iptip.course.user_course.UserCourseRepository;
+import ru.espada.ep.iptip.event.EventEntity;
+import ru.espada.ep.iptip.event.EventRepository;
 import ru.espada.ep.iptip.s3.S3Service;
 import ru.espada.ep.iptip.study_groups.StudyGroupEntity;
+import ru.espada.ep.iptip.study_groups.StudyGroupRepository;
+import ru.espada.ep.iptip.study_groups.study_group_event.StudyGroupEventEntity;
+import ru.espada.ep.iptip.study_groups.study_group_event.StudyGroupEventRepository;
+import ru.espada.ep.iptip.study_groups.user.UserStudyGroupEntity;
+import ru.espada.ep.iptip.study_groups.user.UserStudyGroupEntityRepository;
 import ru.espada.ep.iptip.university.UniversityEntity;
 import ru.espada.ep.iptip.university.institute.InstituteEntity;
 import ru.espada.ep.iptip.university.institute.major.MajorEntity;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyEntity;
 import ru.espada.ep.iptip.university.institute.major.faculty.FacultyRepository;
 import ru.espada.ep.iptip.user.models.response.InstituteInfoResponse;
+import ru.espada.ep.iptip.user.models.response.UserDto;
+import ru.espada.ep.iptip.user.models.response.UserInstituteDto;
 import ru.espada.ep.iptip.user.profile.ProfileEntity;
 import ru.espada.ep.iptip.user.profile.ProfileRepository;
 import ru.espada.ep.iptip.user.models.request.AddRoleRequest;
 import ru.espada.ep.iptip.user.models.request.CreateProfileRequest;
 import ru.espada.ep.iptip.user.permission.UserPermissionService;
+import ru.espada.ep.iptip.user.schedule.ScheduleDto;
 
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +63,10 @@ public class UserService implements UserDetailsService {
     @Value("${users.page-size}")
     private int pageSize;
     private S3Service s3Service;
+    private UserStudyGroupEntityRepository userStudyGroupRepository;
+    private StudyGroupRepository studyGroupRepository;
+    private StudyGroupEventRepository studyGroupEventRepository;
+    private EventRepository eventRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -64,7 +79,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
-    @Cacheable(value = "users", key = "#page - 'users'", unless = "#result == null")
+    @Cacheable(value = "users", key = "#page + '-users'", unless = "#result == null")
     @Transactional
     public List<UserDto> allUsers(int page) {
         Pageable pageable = PageRequest.of(page, pageSize);
@@ -122,6 +137,8 @@ public class UserService implements UserDetailsService {
         profile.setSurname(createProfileRequest.getSurname());
         profile.setPhone(createProfileRequest.getPhone());
         profile.setEmail(createProfileRequest.getEmail());
+        profile.setSemester(createProfileRequest.getSemester());
+        profile.setStudentIdCard(createProfileRequest.getStudentIdCard());
         if (createProfileRequest.getPatronymic() != null) {
             profile.setPatronymic(createProfileRequest.getPatronymic());
         }
@@ -139,16 +156,21 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public CompletableFuture<String> uploadAvatar(String name, byte[] avatar) {
+    @Transactional
+    public String uploadAvatar(String name, byte[] avatar) {
         UserEntity user = userRepository.findByUsername(name).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return s3Service.uploadPng(avatar, "user-" + user.getId(), "user-avatar")
+        String profileUrl = s3Service.uploadPng(avatar, "user-" + user.getId(), "user-avatar")
                 .thenCompose(fileName -> {
                     if (fileName == null) {
                         throw new IllegalArgumentException("exception.user.avatar_upload_failed");
                     } else {
                         return s3Service.getFileUrl("user-avatar", fileName);
                     }
-                }).thenApply(url -> url);
+                }).thenApply(url -> url).join();
+        user.getProfile().setIcon(profileUrl);
+        userRepository.save(user);
+
+        return profileUrl;
     }
 
     public String getAvatarUrl(String name) {
@@ -160,7 +182,7 @@ public class UserService implements UserDetailsService {
     public InstituteInfoResponse getInstituteInfo(String username) {
 
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        ProfileEntity profile = profileRepository.findByUserId(user.getId());
+        ProfileEntity profile = user.getProfile();
         int semester = profile.getSemester();
         int course = semester / 2;
 
@@ -212,34 +234,39 @@ public class UserService implements UserDetailsService {
         userPermissionService.addPermission(addRoleRequest.getUsername(), permission, addRoleRequest.getStartTime(), addRoleRequest.getEndTime());
     }
 
+    public List<UserStudyGroupEntity> getUserStudyGroups(Long userId) {
+        return userStudyGroupRepository.findUserStudyGroupEntitiesByUserId(userId);
+    }
+
+    public UserStudyGroupEntity getMainUserStudyGroup(Long userId) {
+        return userStudyGroupRepository.findUserStudyGroupEntitiesByUserIdAndMain(userId, true);
+    }
+
     private UserDto toUserDto(UserEntity user) {
-        if (user.getProfile() == null) {
-            return UserDto.builder()
-                    .id(user.getId())
-                    .username(user.getUsername())
-                    .createdAt(user.getCreatedAt())
-                    .build();
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setUsername(user.getUsername());
+        userDto.setCreatedAt(user.getCreatedAt());
+
+        if (user.getProfile() != null) {
+            userDto.setProfileName(user.getProfile().getName());
+            userDto.setProfileSurname(user.getProfile().getSurname());
+            userDto.setProfilePatronymic(user.getProfile().getPatronymic());
+            userDto.setProfilePhone(user.getProfile().getPhone());
+            userDto.setProfileEmail(user.getProfile().getEmail());
+            userDto.setProfileBirthDate(user.getProfile().getBirthDate());
+            userDto.setProfileStudentIdCard(user.getProfile().getStudentIdCard());
+            userDto.setProfileIcon(user.getProfile().getIcon());
+            userDto.setProfileEmailConfirmed(user.getProfile().isEmailConfirmed());
+            userDto.setProfilePhoneConfirmed(user.getProfile().isPhoneConfirmed());
+            userDto.setProfileSemester(user.getProfile().getSemester());
         }
-        return UserDto.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .createdAt(user.getCreatedAt())
 
-                .profileName(user.getProfile().getName())
-                .profileSurname(user.getProfile().getSurname())
-                .profilePatronymic(user.getProfile().getPatronymic())
-
-                .profilePhone(user.getProfile().getPhone())
-                .profilePhoneConfirmed(user.getProfile().isPhoneConfirmed())
-                .profileEmail(user.getProfile().getEmail())
-                .profileEmailConfirmed(user.getProfile().isEmailConfirmed())
-
-                .profileBirthDate(user.getProfile().getBirthDate())
-                .profileSemester(user.getProfile().getSemester())
-                .profileStudentIdCard(user.getProfile().getStudentIdCard())
-                .profileIcon(user.getProfile().getIcon())
-                .studyGroupNames(user.getStudyGroups().stream().map(StudyGroupEntity::getName).collect(Collectors.toSet()))
-                .build();
+        UserStudyGroupEntity mainUserStudyGroup = getMainUserStudyGroup(user.getId());
+        if (mainUserStudyGroup != null) {
+            userDto.setStudyGroup(studyGroupRepository.findById(getMainUserStudyGroup(user.getId()).getStudyGroupId()).orElseThrow(() -> new RuntimeException("exception.study_group.not_found")).getName());
+        }
+        return userDto;
     }
 
     @Transactional
@@ -299,9 +326,35 @@ public class UserService implements UserDetailsService {
     public void setCourseRepository(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
     }
+
     @Autowired
     public void setUserCourseRepository(UserCourseRepository userCourseRepository) {
         this.userCourseRepository = userCourseRepository;
+    }
+
+    @Autowired
+    public void setUserPermissionService(UserPermissionService userPermissionService) {
+        this.userPermissionService = userPermissionService;
+    }
+
+    @Transactional
+    public UserInstituteDto getUserInstituteDto(String name) {
+        UserEntity user = userRepository.findByUsername(name).orElseThrow(() -> new RuntimeException("exception.user.not_found"));
+        UserStudyGroupEntity userStudyGroup = userStudyGroupRepository.findUserStudyGroupEntitiesByUserId(user.getId()).stream().filter(UserStudyGroupEntity::isMain).findFirst().orElseThrow(() -> new RuntimeException("exception.user.not_found"));
+        StudyGroupEntity studyGroup = studyGroupRepository.findById(userStudyGroup.getStudyGroupId()).orElseThrow(() -> new RuntimeException("exception.study_group.not_found"));
+
+        return UserInstituteDto.builder()
+                .universityName(studyGroup.getFaculty().getMajor().getInstitute().getUniversity().getName())
+                .instituteName(studyGroup.getFaculty().getMajor().getInstitute().getName())
+                .majorName(studyGroup.getFaculty().getMajor().getName())
+                .majorCode(studyGroup.getFaculty().getMajor().getMajorCode())
+                .facultyName(studyGroup.getFaculty().getName())
+                .build();
+    }
+
+    @Autowired
+    public void setUserStudyGroupRepository(UserStudyGroupEntityRepository userStudyGroupRepository) {
+        this.userStudyGroupRepository = userStudyGroupRepository;
     }
 
     @Autowired
@@ -310,7 +363,96 @@ public class UserService implements UserDetailsService {
     }
 
     @Autowired
-    public void setUserPermissionService(UserPermissionService userPermissionService) {
-        this.userPermissionService = userPermissionService;
+    public void setStudyGroupRepository(StudyGroupRepository studyGroupRepository) {
+        this.studyGroupRepository = studyGroupRepository;
     }
+
+    public List<ScheduleDto> getSchedule(Principal principal, Long date, int days) {
+
+        // TODO: new method, requires edits and testing
+        UserStudyGroupEntity userStudyGroup = getMainUserStudyGroup(getUser(principal.getName()).getId());
+        List<StudyGroupEventEntity> studyGroupEventEntities = studyGroupEventRepository.findAllByStudyGroupId(userStudyGroup.getStudyGroupId());
+        studyGroupEventEntities = studyGroupEventEntities.stream()
+                .filter(StudyGroupEventEntity::isMandatory)
+                .toList();
+        List<EventEntity> events = eventRepository.findAllById(studyGroupEventEntities.stream().map(StudyGroupEventEntity::getEventId).toList());
+        events = filterEvents(events, date, days);
+
+        List<ScheduleDto> scheduleDtos = new ArrayList<>();
+        for (EventEntity event : events) {
+            ScheduleDto scheduleDto = ScheduleDto.builder()
+                    .date(new Date(event.getDate()).getDay())
+                    .dayOfWeek("" + (event.getWeekday()))
+                    .lessons(new ArrayList<>())
+                    .build();
+            scheduleDtos.add(scheduleDto);
+        }
+
+        return scheduleDtos;
+    }
+
+    @Autowired
+    public void setStudyGroupEventRepository(StudyGroupEventRepository studyGroupEventRepository) {
+        this.studyGroupEventRepository = studyGroupEventRepository;
+    }
+
+    @Autowired
+    public void setEventRepository(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+    }
+
+    public List<EventEntity> filterEvents(List<EventEntity> events, Long dateTime, int days) {
+        Long endDate = dateTime + days * 24 * 60 * 60 * 1000; // Конечная дата
+
+        return events.stream()
+                .filter(event -> {
+                    Long eventDate = event.getDate();
+
+                    // Если дата события не задана, проверяем на повторяющиеся события
+                    if (eventDate == null) {
+                        // Проверяем, попадает ли событие в диапазон
+                        return isEventInRange(event, dateTime, endDate);
+                    } else {
+                        // Проверяем, попадает ли конкретная дата события в диапазон
+                        return eventDate >= dateTime && eventDate <= endDate;
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    private boolean isEventInRange(EventEntity event, Long startDate, Long endDate) {
+        // Получаем текущую дату
+        Long currentDate = System.currentTimeMillis();
+
+        // Проверяем, попадает ли событие в диапазон
+        for (int i = 0; i < 100; i++) { // Ограничиваем количество итераций
+            Long weekStartDate = startDate + i * 7 * 24 * 60 * 60 * 1000; // Начало недели
+            Long weekEndDate = weekStartDate + 6 * 24 * 60 * 60 * 1000; // Конец недели
+
+            // Проверяем, является ли неделя четной
+            boolean isEvenWeek = (i % 2 == 0);
+
+            // Если событие повторяется в четные недели
+            if (event.getIs_week_even() && !isEvenWeek) {
+                continue;
+            }
+
+            // Проверяем, попадает ли день недели события в диапазон
+            if (weekStartDate <= endDate && weekEndDate >= startDate) {
+                // Проверяем, совпадает ли день недели
+                if (getDayOfWeek(weekStartDate) == event.getWeekday()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private int getDayOfWeek(Long timestamp) {
+        // Преобразуем timestamp в день недели (0 - воскресенье, 1 - понедельник, ..., 6 - суббота)
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        return calendar.get(java.util.Calendar.DAY_OF_WEEK) - 1; // Приводим к 0-6
+    }
+
 }

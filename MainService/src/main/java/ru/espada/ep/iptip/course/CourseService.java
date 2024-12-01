@@ -81,13 +81,14 @@ public class CourseService {
     }
 
     @Transactional
-    public UserCourseEntity attachUserToCourse(Long courseId, Long userId) {
+    public UserCourseEntity attachUserToCourse(Long courseId, Long userId, int semester) {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         CourseEntity courseEntity = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
 
         return userCourseRepository.save(UserCourseEntity.builder()
                 .courseId(courseEntity.getId())
                 .userId(userEntity.getId())
+                .semester(semester)
                 .build());
     }
 

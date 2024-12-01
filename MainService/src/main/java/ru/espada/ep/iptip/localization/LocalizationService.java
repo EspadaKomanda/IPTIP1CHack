@@ -19,7 +19,11 @@ public class LocalizationService {
 
     public LocalizationService(@Autowired LocalizationYAMLReader localizationYAMLReader) {
         localizedMessages = new HashMap<>();
-        readAllLocalizationFiles(localizationYAMLReader);
+        try {
+            readAllLocalizationFiles(localizationYAMLReader);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String getLocalizedMessage(String code) {
